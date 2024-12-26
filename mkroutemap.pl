@@ -40,7 +40,7 @@ my $cid = $ARGV[0]; # content ID
 
 # load resource json
 my $file = "$workspace/$cid.json";
-open(my $in, '<:raw', $file) or die "Can't open $file: $!";
+open(my $in, '<:raw', $file) or die "Can't open $file: $!\n";
 my $text = do { local $/; <$in> };
 close($in);
 my $resource = decode_json($text);
@@ -58,11 +58,11 @@ sub convert {
   my ($gpx, $routemap) = @_;
   my $input = join ' -f ', @{$gpx};
   my $cmd = "gpsbabel -r -t -i gpx -f $input -x simplify,error=$param{xt_error}k -o gpx,gpxver=1.1 -F -";
-  open(my $in, '-|', $cmd) or die "Can't execute '$cmd': $!";
+  open(my $in, '-|', $cmd) or die "Can't execute '$cmd': $!\n";
   my $xml = $xs->XMLin($in);
   close($in);
   my $geojson = ToGeoJSON::convert($xml);
-  open(my $out, '>', $routemap) or die "Can't open $routemap: $!";
+  open(my $out, '>', $routemap) or die "Can't open $routemap: $!\n";
   print $out $js->encode($geojson), "\n";
   close($out);
 }

@@ -9,7 +9,7 @@ use JSON qw(decode_json);
 use DBI;
 use Math::Round;
 
-die 'Usage: mkexplored <CID>…' if ($#ARGV < 0);
+die "Usage: mkexplored <CID>…\n" if ($#ARGV < 0);
 
 my $sqlite = DBI->connect('dbi:SQLite:dbname=record.sqlite3', '', '',
   { RaiseError => 1, PrintError => 0, sqlite_unicode => 1 }
@@ -30,7 +30,7 @@ EOS
 sub read_json {
   my $file = shift;
 
-  open(my $in, '<:raw', $file) or die $!;
+  open(my $in, '<:raw', $file) or die "Can't open $file: $!\n";
   my $text = do { local $/; <$in> };
   close($in);
   my $root = decode_json($text);

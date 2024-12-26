@@ -62,7 +62,7 @@ foreach my $file (@ARGV) {
   my $dir = dirname $file;
   my ($start, $end, $issue, $title, $summary, $img1x, $img2x);
   $issue = $img1x = $img2x = '';
-  open(my $in, '<', $file) or die "$file $!";
+  open(my $in, '<', $file) or die "Can't open $file: $!\n";
   while (my $line = <$in>) {
     if ($line =~ /"temporalCoverage":"(.*)"/) {
       ($start, $end) = split /\//, $1;

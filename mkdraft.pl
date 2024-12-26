@@ -25,13 +25,13 @@ my $material_img = $cf->{material}->{img};
 # Parse command line argument
 if ($#ARGV < 0) {
   my $script = basename($0);
-  die "Usage: $script CID";
+  die "Usage: $script <CID>\n";
 }
 my $cid = $ARGV[0]; # content ID
 
 # Load resource JSON file
 my $file = "$workspace/$cid.json";
-open(my $in, '<:raw', $file) or die "Can't open $file: $!";
+open(my $in, '<:raw', $file) or die "Can't open $file: $!\n";
 my $text = do { local $/; <$in> };
 close($in);
 my $resource = decode_json($text);
@@ -142,11 +142,11 @@ sub center {
 sub gen_routemap {
   my $routemap = shift;
   my $file = "$workspace/$cid/$routemap";
-  open(my $in, '<:raw', $file) or die "Can't open $file: $!";
+  open(my $in, '<:raw', $file) or die "Can't open $file: $!\n";
   my $text = do { local $/; <$in> };
   close($in);
   my $json = decode_json($text);
-  die "missing 'bbox' in $file"  unless exists $json->{bbox};
+  die "missing 'bbox' in $file\n"  unless exists $json->{bbox};
   my ($lat, $lon, $zoom) = center(@{$json->{bbox}});
   return "routemap.html?lat=$lat&lon=$lon&zoom=$zoom&url=$cid/$routemap";
 }
@@ -213,7 +213,7 @@ my $vars = {
 my $tx = Text::Xslate->new(syntax => 'TTerse', verbose => 2);
 my $html = "$workspace/$cid.html";
 say $html;
-open(my $out, '>', $html) or die "Can't open '$html' $!";
+open(my $out, '>', $html) or die "Can't open $html: $!\n";
 print $out $tx->render($template->{file}, $vars);
 close($out);
 __END__

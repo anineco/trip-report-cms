@@ -17,7 +17,7 @@ sub fromYMD {
 
 my $prg = basename($0, '.pl');
 my $rss = ($prg eq 'rec2rss') ? 'rss' : 'rss2';
-die "Usage: $prg" if ($#ARGV >= 0);
+die "Usage: $prg\n" if ($#ARGV >= 0);
 
 my $dbh = DBI->connect('dbi:SQLite:dbname=record.sqlite3', '', '',
   { RaiseError => 1, PrintError => 0, sqlite_unicode => 1 }

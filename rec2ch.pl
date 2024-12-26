@@ -14,7 +14,7 @@ sub fromYMD {
   return Time::Piece->strptime($s, '%Y-%m-%d');
 }
 
-die 'Usage: rec2ch <year>' if ($#ARGV != 0);
+die "Usage: rec2ch <year>\n" if ($#ARGV != 0);
 my $year = $ARGV[0];
 
 my $vars = {

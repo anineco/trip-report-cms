@@ -19,18 +19,18 @@ my $material_img = $cf->{material}->{img};
 # parse command line argument
 if ($#ARGV < 0) {
   my $script = basename($0);
-  die "Usage: $script <CID>";
+  die "Usage: $script <CID>\n";
 }
 my $cid = $ARGV[0]; # content ID
 
 my $file = "$workspace/$cid.json";
-open(my $in, '<:raw', $file) or die "Can't open $file: $!";
+open(my $in, '<:raw', $file) or die "Can't open $file: $!\n";
 my $text = do { local $/; <$in> };
 close($in);
 my $resource = decode_json($text);
 
 my $cmd = 'bash';
-open(my $out, '|-', $cmd) or die "Can't execute $cmd: $!";
+open(my $out, '|-', $cmd) or die "Can't execute $cmd: $!\n";
 
 print $out <<'EOS';
 set -eu

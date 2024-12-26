@@ -15,7 +15,7 @@ sub fromYMD {
   return Time::Piece->strptime($s, '%Y-%m-%d');
 }
 
-die 'Usage: rec2hist <year>' if ($#ARGV != 0);
+die "Usage: rec2hist <year>\n" if ($#ARGV != 0);
 my $year = $ARGV[0];
 
 my $dbh = DBI->connect('dbi:SQLite:dbname=record.sqlite3', '', '',

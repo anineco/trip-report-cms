@@ -47,7 +47,7 @@ my $xs = XML::Simple->new(
 sub read_gpx {
   my ($file, $trkpts, $wpts) = @_;
 
-  my $root = $xs->XMLin($file) or die "Error! can't parse $file: $!\n";
+  my $root = $xs->XMLin($file) or die "Parse error in $file: $!\n";
   foreach my $wpt (@{$root->{gpx}[0]->{wpt}}) {
     my $item = {
       lon => 0 + $wpt->{lon},
@@ -220,7 +220,7 @@ foreach my $file (glob "$material_img/$cid/*[0-9][0-9][0-9][0-9].*") {
   my $key = $base =~ s/^....(....)\..*$/$1/r;
   if (exists $hash{$key} && $key ne $resource->{cover}->{hash}) {
     for (my $i = 0; $i <= 26; $i++) {
-      die 'hash error' if ($i == 26);
+      die "Hash error\n" if ($i == 26);
       my $c = chr(97 + $i);
       unless (exists $hash{$key . $c}) {
         $key .= $c;
