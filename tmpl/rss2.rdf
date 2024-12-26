@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+<channel>
+<atom:link href="https://anineco.org/tozan2.rdf" rel="self" type="application/rss+xml"/>
+<title>あにねこ登山日誌</title>
+<link>https://anineco.org/</link>
+<description>群馬県桐生市からの車利用日帰り山歩きをメインとする山行記録</description>
+[% FOREACH r IN record -%]
+<item>
+<title>[% r.title %]</title>
+<link>https://anineco.org/[% r.link %]</link>
+<description>[% r.date %] [% r.summary %]</description>
+<content:encoded><![CDATA[<img src="https://anineco.org/[% r.img1x %]" srcset="https://anineco.org/[% r.img2x %] 2x" width="120" height="90">]]></content:encoded>
+<dc:subject>登山</dc:subject>
+<dc:creator>あにねこ</dc:creator>
+<dc:date>[% r.issue %]</dc:date>
+<guid>https://anineco.org/[% r.link %]</guid>
+</item>
+[% END -%]
+</channel>
+</rss>

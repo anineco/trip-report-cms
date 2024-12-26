@@ -1,0 +1,5 @@
+@import "../node_modules/luminous-lightbox/dist/luminous-basic.css";
+
+.lightbox { cursor: zoom-in; }
+_:-ms-lang(x), .lightbox { cursor: not-allowed; } /* IE11 */
+.lum-gallery-button { display: none; }

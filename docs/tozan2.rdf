@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0">
+<channel>
+<atom:link href="https://anineco.org/tozan2.rdf" rel="self" type="application/rss+xml"/>
+<title>あにねこ登山日誌</title>
+<link>https://anineco.org/</link>
+<description>群馬県桐生市からの車利用日帰り山歩きをメインとする山行記録</description>
+<item>
+<title>釜ノ沢五峰</title>
+<link>https://anineco.org/241215.html</link>
+<description>2024年12月15日 岩尾根を秘めた秩父の里山を歩く。</description>
+<content:encoded><![CDATA[<img src="https://anineco.org/241215/S4472.jpg" srcset="https://anineco.org/241215/2x/S4472.jpg 2x" width="120" height="90">]]></content:encoded>
+<dc:subject>登山</dc:subject>
+<dc:creator>あにねこ</dc:creator>
+<dc:date>2024-12-24</dc:date>
+<guid>https://anineco.org/241215.html</guid>
+</item>
+<item>
+<title>毘沙門山</title>
+<link>https://anineco.org/241208.html</link>
+<description>2024年12月8日 スリル満点の激坂を経て、大展望の岩峰に至る。</description>
+<content:encoded><![CDATA[<img src="https://anineco.org/241208/S4266.jpg" srcset="https://anineco.org/241208/2x/S4266.jpg 2x" width="120" height="90">]]></content:encoded>
+<dc:subject>登山</dc:subject>
+<dc:creator>あにねこ</dc:creator>
+<dc:date>2024-12-14</dc:date>
+<guid>https://anineco.org/241208.html</guid>
+</item>
+<item>
+<title>彦谷湯殿山</title>
+<link>https://anineco.org/241201.html</link>
+<description>2024年12月1日 東コースから西コースへ周回。</description>
+<content:encoded><![CDATA[<img src="https://anineco.org/241201/S4146.jpg" srcset="https://anineco.org/241201/2x/S4146.jpg 2x" width="120" height="90">]]></content:encoded>
+<dc:subject>登山</dc:subject>
+<dc:creator>あにねこ</dc:creator>
+<dc:date>2024-12-07</dc:date>
+<guid>https://anineco.org/241201.html</guid>
+</item>
+<item>
+<title>宝篋山</title>
+<link>https://anineco.org/241123.html</link>
+<description>2024年11月23日 極楽寺コースと小田城コースを6人パーティで歩く。</description>
+<content:encoded><![CDATA[<img src="https://anineco.org/241123/S3963.jpg" srcset="https://anineco.org/241123/2x/S3963.jpg 2x" width="120" height="90">]]></content:encoded>
+<dc:subject>登山</dc:subject>
+<dc:creator>あにねこ</dc:creator>
+<dc:date>2024-11-29</dc:date>
+<guid>https://anineco.org/241123.html</guid>
+</item>
+<item>
+<title>十坊山〜浮嶽〜女岳</title>
+<link>https://anineco.org/241109.html</link>
+<description>2024年11月9日 脊振山地西端の三山を繋いで歩く。</description>
+<content:encoded><![CDATA[<img src="https://anineco.org/241109/S3904.jpg" srcset="https://anineco.org/241109/2x/S3904.jpg 2x" width="120" height="90">]]></content:encoded>
+<dc:subject>登山</dc:subject>
+<dc:creator>あにねこ</dc:creator>
+<dc:date>2024-11-24</dc:date>
+<guid>https://anineco.org/241109.html</guid>
+</item>
+<item>
+<title>黒山三滝〜関八州見晴台</title>
+<link>https://anineco.org/241104.html</link>
+<description>2024年11月4日 越生町の滝と山を巡って歩く。</description>
+<content:encoded><![CDATA[<img src="https://anineco.org/241104/S3783.jpg" srcset="https://anineco.org/241104/2x/S3783.jpg 2x" width="120" height="90">]]></content:encoded>
+<dc:subject>登山</dc:subject>
+<dc:creator>あにねこ</dc:creator>
+<dc:date>2024-11-17</dc:date>
+<guid>https://anineco.org/241104.html</guid>
+</item>
+<item>
+<title>御座山</title>
+<link>https://anineco.org/241020.html</link>
+<description>2024年10月20日 栗生登山口から往復。</description>
+<content:encoded><![CDATA[<img src="https://anineco.org/241020/S3583.jpg" srcset="https://anineco.org/241020/2x/S3583.jpg 2x" width="120" height="90">]]></content:encoded>
+<dc:subject>登山</dc:subject>
+<dc:creator>あにねこ</dc:creator>
+<dc:date>2024-10-26</dc:date>
+<guid>https://anineco.org/241020.html</guid>
+</item>
+<item>
+<title>八海山</title>
+<link>https://anineco.org/241014.html</link>
+<description>2024年10月14日 山頂駅から千本檜小屋まで6人パーティで登る。</description>
+<content:encoded><![CDATA[<img src="https://anineco.org/241014/S3495.jpg" srcset="https://anineco.org/241014/2x/S3495.jpg 2x" width="120" height="90">]]></content:encoded>
+<dc:subject>登山</dc:subject>
+<dc:creator>あにねこ</dc:creator>
+<dc:date>2024-10-21</dc:date>
+<guid>https://anineco.org/241014.html</guid>
+</item>
+<item>
+<title>安達太良山</title>
+<link>https://anineco.org/240924.html</link>
+<description>2024年9月24日 ロープウェイを利用して周回。</description>
+<content:encoded><![CDATA[<img src="https://anineco.org/240924/S3440.jpg" srcset="https://anineco.org/240924/2x/S3440.jpg 2x" width="120" height="90">]]></content:encoded>
+<dc:subject>登山</dc:subject>
+<dc:creator>あにねこ</dc:creator>
+<dc:date>2024-10-04</dc:date>
+<guid>https://anineco.org/240924.html</guid>
+</item>
+<item>
+<title>牧山</title>
+<link>https://anineco.org/240916.html</link>
+<description>2024年9月16日 佐世保周辺の山3日目。</description>
+<content:encoded><![CDATA[<img src="https://anineco.org/240916/S3356.jpg" srcset="https://anineco.org/240916/2x/S3356.jpg 2x" width="120" height="90">]]></content:encoded>
+<dc:subject>登山</dc:subject>
+<dc:creator>あにねこ</dc:creator>
+<dc:date>2024-09-29</dc:date>
+<guid>https://anineco.org/240916.html</guid>
+</item>
+<item>
+<title>志々伎山・佐志岳</title>
+<link>https://anineco.org/240915.html</link>
+<description>2024年9月15日 佐世保周辺の山2日目。</description>
+<content:encoded><![CDATA[<img src="https://anineco.org/240915/S3254.jpg" srcset="https://anineco.org/240915/2x/S3254.jpg 2x" width="120" height="90">]]></content:encoded>
+<dc:subject>登山</dc:subject>
+<dc:creator>あにねこ</dc:creator>
+<dc:date>2024-09-28</dc:date>
+<guid>https://anineco.org/240915.html</guid>
+</item>
+<item>
+<title>烏帽子岳・隠居岳・国見山</title>
+<link>https://anineco.org/240914.html</link>
+<description>2024年9月14日 佐世保周辺の山1日目。</description>
+<content:encoded><![CDATA[<img src="https://anineco.org/240914/S3090.jpg" srcset="https://anineco.org/240914/2x/S3090.jpg 2x" width="120" height="90">]]></content:encoded>
+<dc:subject>登山</dc:subject>
+<dc:creator>あにねこ</dc:creator>
+<dc:date>2024-09-23</dc:date>
+<guid>https://anineco.org/240914.html</guid>
+</item>
+<item>
+<title>谷川岳</title>
+<link>https://anineco.org/240818.html</link>
+<description>2024年8月18日 トレーニングで西黒尾根を登る。</description>
+<content:encoded><![CDATA[<img src="https://anineco.org/240818/S2993.jpg" srcset="https://anineco.org/240818/2x/S2993.jpg 2x" width="120" height="90">]]></content:encoded>
+<dc:subject>登山</dc:subject>
+<dc:creator>あにねこ</dc:creator>
+<dc:date>2024-08-25</dc:date>
+<guid>https://anineco.org/240818.html</guid>
+</item>
+<item>
+<title>千頭星山〜甘利山</title>
+<link>https://anineco.org/240812.html</link>
+<description>2024年8月12日 椹池から大笹池を経て周回する。</description>
+<content:encoded><![CDATA[<img src="https://anineco.org/240812/S2851.jpg" srcset="https://anineco.org/240812/2x/S2851.jpg 2x" width="120" height="90">]]></content:encoded>
+<dc:subject>登山</dc:subject>
+<dc:creator>あにねこ</dc:creator>
+<dc:date>2024-08-17</dc:date>
+<guid>https://anineco.org/240812.html</guid>
+</item>
+<item>
+<title>入笠山</title>
+<link>https://anineco.org/240721.html</link>
+<description>2024年7月21日 高遠側から法華道を登る。</description>
+<content:encoded><![CDATA[<img src="https://anineco.org/240721/S2578.jpg" srcset="https://anineco.org/240721/2x/S2578.jpg 2x" width="120" height="90">]]></content:encoded>
+<dc:subject>登山</dc:subject>
+<dc:creator>あにねこ</dc:creator>
+<dc:date>2024-08-03</dc:date>
+<guid>https://anineco.org/240721.html</guid>
+</item>
+</channel>
+</rss>

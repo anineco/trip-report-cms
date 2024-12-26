@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>目次</title>
+<link rel="stylesheet" href="css/tozan.css">
+<link rel="stylesheet" href="css/list.css">
+<style>
+@media (pointer: coarse) {
+  li {
+    margin-top: 6px;
+    margin-bottom: 6px;
+  }
+}
+</style>
+<script type="module" src="js/tozan.js"></script>
+</head>
+<body>
+<div id="container">
+<main>
+<article>
+<h1>目次</h1>
+<ul>
+<li><a href="about.html">このサイトについて</a></li>
+<li><a href="profile.html">自己紹介</a></li>
+<li><a href="link.html">リンク集</a></li>
+<li>年別更新履歴
+<ul>
+[% FOREACH h IN hist -%]
+<li><a href="[% h.url %]">更新履歴（[% h.year %]年）</a></li>
+[% END -%]
+</ul>
+</li>
+<li><a href="bbs/index.cgi" rel="ugc">掲示板</a></li>
+<li>年別山行記録
+<ul>
+[% FOREACH c IN chron -%]
+<li><a href="[% c.url %]">山行記録（[% c.year %]年）</a>
+<ul>
+[% FOREACH r IN c.record -%]
+[% IF r.link -%]
+<li><a title="[% r.date %]" href="[% r.link %]">[% r.title %]</a></li>
+[% ELSE -%]
+<li><span title="[% r.date %]">[% r.title %]</span></li>
+[% END -%]
+[% END -%]
+</ul>
+</li>
+[% END -%]
+<li><a href="ch1997.html">山行一覧（1975〜1997年）</a>
+<ul>
+<li><a title="1997-10-11/12" href="971011.html">松木川〜皇海山</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>地図から選択
+<ul>
+<li><a href="map.html?cat=0">全山行記録</a></li>
+<li><a href="map.html?cat=14">日本の主な山岳</a></li>
+<li><a href="map.html?cat=1">日本三百名山</a></li>
+<li><a href="map.html?cat=2">ぐんま百名山</a></li>
+<li><a href="map.html?cat=11">群馬300山</a></li>
+<li><a href="map.html?cat=3">栃木百名山</a></li>
+<li><a href="map.html?cat=8">埼玉百山</a></li>
+<li><a href="map.html?cat=5">信州百名山</a></li>
+<li><a href="map.html?cat=6">山梨百名山</a></li>
+<li><a href="map.html?cat=7">うつくしま百名山</a></li>
+<li><a href="map.html?cat=12">新うつくしま百名山</a></li>
+<li><a href="map.html?cat=10">越後百山</a></li>
+<li><a href="map.html?cat=4">桐生地域百山</a></li>
+<li><a href="map.html?cat=9">足利百名山</a></li>
+<li><a href="help.html">ヘルプとクレジット</a></li>
+</ul>
+</li>
+<li>雑記
+<ul>
+<li><a href="nandoku.html">難読・稀少漢字山名</a></li>
+</ul>
+</li>
+</ul>
+</article>
+</main>
+<footer>
+<hr>
+<small>あにねこ登山日誌 © 2004-[% lm_year %] <a href="https://anineco.org/">anineco.org</a></small>
+<nav><a href=".">TOP</a></nav>
+</footer>
+</div>
+</body>
+</html>
