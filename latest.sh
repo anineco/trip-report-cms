@@ -1,10 +1,7 @@
 #!/bin/bash
-r=($(sqlite3 record.db '
+r=($(sqlite3 record.sqlite3 '
 SELECT max(start) FROM record;
-CREATE TEMP TABLE issues (issue TEXT);
-INSERT INTO issues SELECT max(issue) FROM record;
-INSERT INTO issues SELECT max(issue) FROM changelog;
-SELECT max(issue) FROM issues;
+SELECT max(issue) FROM record;
 '))
 YEAR=${r[0]:0:4}
 LM_DATE=${r[1]}
