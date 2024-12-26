@@ -6,6 +6,7 @@ use utf8;
 use open qw(:utf8 :std);
 
 use DBI;
+use Text::CSV;
 use Text::Xslate qw(mark_raw);
 use Time::Piece;
 
@@ -54,18 +55,14 @@ $sth1->finish;
 #
 # その他の更新履歴
 #
-my $sth2 = $dbh->prepare(<<'EOS');
-SELECT issue,content FROM changelog WHERE issue LIKE ?
-EOS
-
-$sth2->execute($year . '%');
-while (my $row = $sth2->fetch) {
+my $csv = Text::CSV->new();
+my $file = 'changelog.csv';
+open(my $in, '<', $file) or die "Can't open $file: $!\n";
+while (my $row = $csv->getline($in)) {
   my ($issue, $content) = @$row;
-  push(@{$items{$issue}}, $content);
+  push(@{$items{$issue}}, $content) if ($issue =~ /^$year/);
 }
-$sth2->finish;
-
-$dbh->disconnect;
+close($in);
 
 #
 # テンプレートからHTMLを生成
