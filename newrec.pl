@@ -13,6 +13,7 @@ use Text::CSV;
 my $dbh = DBI->connect('dbi:SQLite:dbname=record.sqlite3', '', '',
   { RaiseError => 1, PrintError => 0, sqlite_unicode => 1 }
 ) or die $DBI::errstr;
+my $sth;
 
 # テーブルを作成
 $dbh->do(<<'EOS');
@@ -36,13 +37,28 @@ sqlite> .import record_no_page.csv recode
 sqlite> .exit
 =cut 
 
+# 引数を解析
+sub parse_arg {
+  my $arg = shift; # 山行記録のCIDまたはファイル名
+  my ($cid, $file);
+  if ($arg =~ /\.html$/) {
+    $cid = basename $arg, '.html';
+    $file = $arg;
+  } else {
+    $cid = $arg;
+    $file = "docs/$cid.html";
+  }
+  return ($cid, $file);
+}
+
 # オプションを解析
 if ($#ARGV >= 0 && $ARGV[0] eq '-d') {
   shift(@ARGV);
   # 山行記録を削除
-  my $sth = $dbh->prepare('DELETE FROM record WHERE link=?');
-  foreach my $file (@ARGV) {
-    my $link = basename $file;
+  $sth = $dbh->prepare('DELETE FROM record WHERE link=?');
+  foreach my $arg (@ARGV) {
+    my ($cid, $file) = parse_arg($arg);
+    my $link = "$cid.html";
     $sth->execute($link);
     $sth->finish;
   }
@@ -52,8 +68,9 @@ if ($#ARGV >= 0 && $ARGV[0] eq '-d') {
 
 # 山行記録を登録
 $sth = $dbh->prepare('REPLACE INTO record VALUES (?,?,?,?,?,?,?,?)');
-foreach my $file (@ARGV) {
-  my $link = basename $file;
+foreach my $arg (@ARGV) {
+  my ($cid, $file) = parse_arg($arg);
+  my $link = "$cid.html";
   my $dir = dirname $file;
   my ($start, $end, $issue, $title, $summary, $img1x, $img2x);
   $issue = $img1x = $img2x = '';
