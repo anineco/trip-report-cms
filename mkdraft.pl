@@ -201,12 +201,6 @@ my $vars = {
   section => gen_section($resource->{section}),
   lm_year => $now->year,
   year => $s->year,
-# Site specific variables
-  site_name => $template->{site_name},
-  site_url => $template->{site_url},
-  copyright => $template->{copyright},
-  x_account => $template->{x_account},
-  author => $template->{author}
 };
 
 # Translate template
@@ -214,6 +208,6 @@ my $tx = Text::Xslate->new(syntax => 'TTerse', verbose => 2);
 my $html = "$workspace/$cid.html";
 say $html;
 open(my $out, '>', $html) or die "Can't open $html: $!\n";
-print $out $tx->render($template->{file}, $vars);
+print $out $tx->render('tmpl/tozan.html', $vars);
 close($out);
 __END__
