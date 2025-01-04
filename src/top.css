@@ -10,7 +10,7 @@ img {
 }
 
 body {
-  /* background-image: url(../image/kabe_2406.gif); *//* 正月 */
+  background-image: url(../image/kabe_2406.gif); /* 正月 */
   /* background-image: url(../image/kabe_2234.gif); *//* 雪 */
   /* background-image: url(../image/kabe_2402.gif); *//* 残雪 */
   /* background-image: url(../image/kabe_17.gif); *//* 桜 */
@@ -18,14 +18,14 @@ body {
   /* background-image: url(../image/kabe_2305.gif); *//* 梅雨 */
   /* background-image: url(../image/cta01.png); *//* 夏 */
   /* background-image: url(../image/kabe_2392.gif); *//* 秋 */
-  background-image: url(../image/kabe_156.gif); /* 年末 */
+  /* background-image: url(../image/kabe_156.gif); *//* 年末 */
   background-repeat: repeat;
   font-family: 'Helvetica Neue', 'Arial', 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', 'Meiryo', sans-serif;
 }
 
 :root {
-  --main-color: darkslategray; /* default */
-  /* --main-color: maroon; */
+  /* --main-color: darkslategray; *//* default */
+  --main-color: maroon;
 }
 
 #container {
