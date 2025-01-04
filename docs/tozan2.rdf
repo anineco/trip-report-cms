@@ -6,6 +6,16 @@
 <link>https://anineco.org/</link>
 <description>群馬県桐生市からの車利用日帰り山歩きをメインとする山行記録</description>
 <item>
+<title>高取山〜華厳山〜経ヶ岳</title>
+<link>https://anineco.org/250103.html</link>
+<description>2025年1月3日 相州アルプス南端の西山三山を歩く。</description>
+<content:encoded><![CDATA[<img src="https://anineco.org/250103/S4676.jpg" srcset="https://anineco.org/250103/2x/S4676.jpg 2x" width="120" height="90">]]></content:encoded>
+<dc:subject>登山</dc:subject>
+<dc:creator>あにねこ</dc:creator>
+<dc:date>2025-01-05</dc:date>
+<guid>https://anineco.org/250103.html</guid>
+</item>
+<item>
 <title>釜ノ沢五峰</title>
 <link>https://anineco.org/241215.html</link>
 <description>2024年12月15日 岩尾根を秘めた秩父の里山を歩く。</description>
@@ -144,16 +154,6 @@
 <dc:creator>あにねこ</dc:creator>
 <dc:date>2024-08-17</dc:date>
 <guid>https://anineco.org/240812.html</guid>
-</item>
-<item>
-<title>入笠山</title>
-<link>https://anineco.org/240721.html</link>
-<description>2024年7月21日 高遠側から法華道を登る。</description>
-<content:encoded><![CDATA[<img src="https://anineco.org/240721/S2578.jpg" srcset="https://anineco.org/240721/2x/S2578.jpg 2x" width="120" height="90">]]></content:encoded>
-<dc:subject>登山</dc:subject>
-<dc:creator>あにねこ</dc:creator>
-<dc:date>2024-08-03</dc:date>
-<guid>https://anineco.org/240721.html</guid>
 </item>
 </channel>
 </rss>
