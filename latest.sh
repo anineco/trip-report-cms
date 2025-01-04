@@ -1,10 +1,20 @@
-#!/bin/bash
+#!/opt/local/bin/bash -eu
 r=($(sqlite3 record.sqlite3 '
 SELECT max(start) FROM record;
 SELECT max(issue) FROM record;
 '))
 YEAR=${r[0]:0:4}
-LM_DATE=${r[1]}
+date1=${r[1]}
+date2=$(cut -d ',' -f 1 changelog.csv | sort -n | tail -n 1)
+
+echo date1=$date1
+echo date2=$date2
+
+if [[ "$date1" > "$date2" ]]; then
+  LM_DATE=$date1
+else
+  LM_DATE=$date2
+fi
 cat << EOS
 VITE_YEAR=$YEAR
 VITE_LM_DATE=$LM_DATE
