@@ -23,7 +23,7 @@ my $LMYY = $cf->{_}->{VITE_LMYY};
 my $vars = {
   lm_date => $LM_DATE,
   lm_year => $LM_YEAR,
-  history => "hist${LMYY}.html",
+  lmyy => $LMYY,
   record => []
 };
 
