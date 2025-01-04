@@ -20,3 +20,6 @@ docs/sitemap.xml.gz
 *.jpg
 *.avif
 *.sqlite3
+*.pdf
+*.PDF
+*.tgz
