@@ -10,19 +10,20 @@ DOCS = docs/
 TARGET_HTML = $(addprefix ${DOCS}, index.html toc.html ch${YEAR}.html hist${LMYY}.html)
 TARGET_RDF = $(addprefix ${DOCS}, tozan.rdf tozan2.rdf)
 TARGET_CSS = $(addprefix ${DOCS}css/, top.css tozan.css list.css chronicle.css lightbox.css)
+TARGET_JS  = $(addprefix ${DOCS}js/, tozan.js lightbox.js)
 TARGET_ENV = .env.local
 
 .ONESHELL:
 
-all: ${TARGET_HTML} ${TARGET_RDF} ${TARGET_CSS} ${TARGET_ENV}
+all: ${TARGET_HTML} ${TARGET_RDF} ${TARGET_CSS} ${TARGET_JS} ${TARGET_ENV}
 
 .env.local: record.sqlite3 latest.sh
 	./latest.sh > $@
 
-${DOCS}index.html: record.sqlite3 rec2idx.pl tmpl/index.html
+${DOCS}index.html: record.sqlite3 rec2idx.pl tmpl/index.html .env.local
 	./rec2idx.pl > $@
 
-${DOCS}toc.html: record.sqlite3 rec2toc.pl tmpl/toc.html
+${DOCS}toc.html: record.sqlite3 rec2toc.pl tmpl/toc.html .env.local
 	./rec2toc.pl > $@
 
 ${DOCS}ch${YEAR}.html: record.sqlite3 rec2ch.pl tmpl/ch.html
@@ -39,6 +40,9 @@ ${DOCS}tozan2.rdf: record.sqlite3 rec2rss2.pl tmpl/rss2.rdf
 
 ${DOCS}css/%.css: src/%.css
 	cleancss -o $@ $^
+
+${DOCS}js/%.js: src/%.js .env.local
+	npm run build
 
 .PHONY: sitemap lint clean .dummy
 
