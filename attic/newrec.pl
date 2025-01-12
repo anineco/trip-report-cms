@@ -7,7 +7,6 @@ use open qw(:utf8 :std);
 
 use File::Basename;
 use DBI;
-use Text::CSV;
 
 # データベースをオープン
 my $dbh = DBI->connect('dbi:SQLite:dbname=record.sqlite3', '', '',
@@ -18,7 +17,7 @@ my $sth;
 # テーブルを作成
 $dbh->do(<<'EOS');
 CREATE TABLE IF NOT EXISTS record (
-  start TEXT NOT NULL PRIMARY KEY, -- 開始日
+  start TEXT PRIMARY KEY, -- 開始日
   end TEXT NOT NULL,   -- 終了日
   issue TEXT,          -- 公開日
   title TEXT NOT NULL, -- タイトル
@@ -33,7 +32,7 @@ EOS
 Webページのない山行記録をCSVファイルで読み込む場合は次を実行
 $ sqlite3 record.sqlite3
 sqlite> .mode csv
-sqlite> .import record_no_page.csv recode
+sqlite> .import report_no_page.csv report
 sqlite> .exit
 =cut 
 
