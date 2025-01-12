@@ -11,7 +11,7 @@ import sys
 import mysql.connector
 
 # open sqlite3 connection
-connection1 = sqlite3.connect('metadata.sqlite3')
+connection1 = sqlite3.connect('data/metadata.sqlite3')
 cursor1 = connection1.cursor()
 
 # open mysql connection

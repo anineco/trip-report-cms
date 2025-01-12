@@ -21,7 +21,7 @@ context = {
 }
 
 # read data base
-connection = sqlite3.connect('metadata.sqlite3')
+connection = sqlite3.connect('data/metadata.sqlite3')
 cursor = connection.cursor()
 
 lm_year = 2022 # NOTE: backward compatibility

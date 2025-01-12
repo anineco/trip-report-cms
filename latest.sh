@@ -1,11 +1,11 @@
 #!/opt/local/bin/bash -eu
-r=($(sqlite3 metadata.sqlite3 '
+r=($(sqlite3 data/metadata.sqlite3 '
 SELECT max(start) FROM metadata;
 SELECT max(pub) FROM metadata;
 '))
 YEAR=${r[0]:0:4}
 date1=${r[1]}
-date2=$(cut -d ',' -f 1 changelog.csv | sort -n | tail -n 1)
+date2=$(cut -d ',' -f 1 data/changelog.csv | sort -n | tail -n 1)
 
 echo date1=$date1
 echo date2=$date2

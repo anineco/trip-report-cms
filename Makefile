@@ -17,25 +17,25 @@ TARGET_ENV = .env.local
 
 all: ${TARGET_HTML} ${TARGET_RDF} # ${TARGET_CSS} ${TARGET_JS} ${TARGET_ENV}
 
-.env.local: metadata.sqlite3 latest.sh
+.env.local: data/metadata.sqlite3 latest.sh
 	./latest.sh > $@
 
-${DOCS}index.html: metadata.sqlite3 cms2idx.py template/index.html .env.local
+${DOCS}index.html: data/metadata.sqlite3 cms2idx.py template/index.html .env.local
 	./cms2idx.py > $@
 
-${DOCS}toc.html: metadata.sqlite3 cms2toc.py template/toc.html .env.local
+${DOCS}toc.html: data/metadata.sqlite3 cms2toc.py template/toc.html .env.local
 	./cms2toc.py > $@
 
-${DOCS}ch${YEAR}.html: metadata.sqlite3 cms2ch.py template/ch.html
+${DOCS}ch${YEAR}.html: data/metadata.sqlite3 cms2ch.py template/ch.html
 	./cms2ch.py ${YEAR} > $@
 
-${DOCS}hist${LMYY}.html: metadata.sqlite3 cms2hist.py template/hist.html
+${DOCS}hist${LMYY}.html: data/metadata.sqlite3 data/changelog.csv cms2hist.py template/hist.html
 	./cms2hist.py ${LM_YEAR} > $@
 
-${DOCS}tozan.rdf: metadata.sqlite3 cms2rss.py template/rss10.xml
+${DOCS}tozan.rdf: data/metadata.sqlite3 cms2rss.py template/rss10.xml
 	./cms2rss.py 1.0 > $@
 
-${DOCS}tozan2.rdf: metadata.sqlite3 cms2rss.py template/rss20.xml
+${DOCS}tozan2.rdf: data/metadata.sqlite3 cms2rss.py template/rss20.xml
 	./cms2rss.py 2.0 > $@
 
 ${DOCS}css/%.css: src/%.css

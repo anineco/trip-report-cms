@@ -32,7 +32,7 @@ for year in range(int(lm_year), 2003, -1):
 
 # 年別山行記録
 
-connection = sqlite3.connect('metadata.sqlite3')
+connection = sqlite3.connect('data/metadata.sqlite3')
 cursor = connection.cursor()
 
 for year in range(int(lm_year), 1997, -1):

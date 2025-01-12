@@ -7,7 +7,7 @@ import sqlite3
 import sys
 
 # open database connection
-connection = sqlite3.connect('metadata.sqlite3')
+connection = sqlite3.connect('data/metadata.sqlite3')
 cursor = connection.cursor()
 
 # create table
@@ -26,9 +26,9 @@ CREATE TABLE IF NOT EXISTS metadata (
 ''')
 connection.commit()
 
-# $ sqlite3 metadata.sqlite3
+# $ sqlite3 data/metadata.sqlite3
 # sqlite> .mode csv
-# sqlite> .import metadata_no_page.csv metadata
+# sqlite> .import data/metadata_no_page.csv metadata
 # sqlite> .quit
 
 # parse command line arguments
