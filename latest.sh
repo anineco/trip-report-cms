@@ -1,7 +1,7 @@
 #!/opt/local/bin/bash -eu
-r=($(sqlite3 record.sqlite3 '
-SELECT max(start) FROM record;
-SELECT max(issue) FROM record;
+r=($(sqlite3 metadata.sqlite3 '
+SELECT max(start) FROM metadata;
+SELECT max(pub) FROM metadata;
 '))
 YEAR=${r[0]:0:4}
 date1=${r[1]}

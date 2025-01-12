@@ -15,28 +15,28 @@ TARGET_ENV = .env.local
 
 .ONESHELL:
 
-all: ${TARGET_HTML} ${TARGET_RDF} ${TARGET_CSS} ${TARGET_JS} ${TARGET_ENV}
+all: ${TARGET_HTML} ${TARGET_RDF} # ${TARGET_CSS} ${TARGET_JS} ${TARGET_ENV}
 
-.env.local: record.sqlite3 latest.sh
+.env.local: metadata.sqlite3 latest.sh
 	./latest.sh > $@
 
-${DOCS}index.html: record.sqlite3 rec2idx.pl tmpl/index.html .env.local
-	./rec2idx.pl > $@
+${DOCS}index.html: metadata.sqlite3 cms2idx.py template/index.html .env.local
+	./cms2idx.py > $@
 
-${DOCS}toc.html: record.sqlite3 rec2toc.pl tmpl/toc.html .env.local
-	./rec2toc.pl > $@
+${DOCS}toc.html: metadata.sqlite3 cms2toc.py template/toc.html .env.local
+	./cms2toc.py > $@
 
-${DOCS}ch${YEAR}.html: record.sqlite3 rec2ch.pl tmpl/ch.html
-	./rec2ch.pl ${YEAR} > $@
+${DOCS}ch${YEAR}.html: metadata.sqlite3 cms2ch.py template/ch.html
+	./cms2ch.py ${YEAR} > $@
 
-${DOCS}hist${LMYY}.html: record.sqlite3 rec2hist.pl tmpl/hist.html
-	./rec2hist.pl ${LM_YEAR} > $@
+${DOCS}hist${LMYY}.html: metadata.sqlite3 cms2hist.py template/hist.html
+	./cms2hist.py ${LM_YEAR} > $@
 
-${DOCS}tozan.rdf: record.sqlite3 rec2rss.pl tmpl/rss.rdf
-	./rec2rss.pl > $@
+${DOCS}tozan.rdf: metadata.sqlite3 cms2rss.py template/rss10.xml
+	./cms2rss.py 1.0 > $@
 
-${DOCS}tozan2.rdf: record.sqlite3 rec2rss2.pl tmpl/rss2.rdf
-	./rec2rss2.pl > $@
+${DOCS}tozan2.rdf: metadata.sqlite3 cms2rss.py template/rss20.xml
+	./cms2rss.py 2.0 > $@
 
 ${DOCS}css/%.css: src/%.css
 	cleancss -o $@ $^

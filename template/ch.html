@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>山行記録（{{ year }}年）</title>
+<link rel="stylesheet" href="css/chronicle.css">
+<script type="module" src="js/tozan.js"></script>
+</head>
+<body>
+<div id="container">
+<main>
+<article>
+<h1>山行記録（{{ year }}年）</h1>
+<div id="chronicle">
+{% for item in items %}
+<div class="record">
+{% if item.img1x %}
+<div class="photo"><img src="{{ item.img1x }}" srcset="{{ item.img2x }} 2x" width="120" height="90" alt=""></div>
+{% else -%}
+<div class="photo"><img src="image/no_image.png" width="120" height="90" alt=""></div>
+{% endif %}
+<div class="note">
+<div>{{ item.period }}</div>
+{% if item.link %}
+<h2><a href="{{ item.link }}">{{ item.title }}</a></h2>
+{% else %}
+<h2>{{ item.title }}</h2>
+{% endif %}
+<p>{{ item.summary }}</p>
+</div>
+</div>
+{% endfor %}
+</div>
+</article>
+</main>
+<footer>
+<hr>
+<small>あにねこ登山日誌 © {{ lm_year }} <a href="https://anineco.org/">anineco.org</a></small>
+<nav><a href=".">TOP</a>
+▶
+<select id="ch-year" title="年別山行記録"></select></nav>
+</footer>
+</div>
+</body>
+</html>
