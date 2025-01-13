@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from datetime import datetime, timedelta
 import glob
 import json
 import os
@@ -10,18 +9,20 @@ import sys
 
 import mysql.connector
 
-# open sqlite3 connection
+ICON_SUMMIT = 'symbols/Summit.png'
+
+# open metadata database of trip reports
 connection1 = sqlite3.connect('data/metadata.sqlite3')
 cursor1 = connection1.cursor()
 
-# open mysql connection
+# open geologiacl database of mountains for nearest point search
 connection2 = mysql.connector.connect(
     option_files=os.path.expanduser('~/.my.cnf'),
     database='anineco_tozan'
 )
 cursor2 = connection2.cursor()
 
-# read geojson file and write SQL for register explored points
+# read geojson file and find nearest summit from geological database
 def read_geojson(file):
     with open(file, 'r', encoding='utf-8') as f:
         root = json.load(f)
@@ -30,22 +31,20 @@ def read_geojson(file):
         # extract summit points
         geometry = feature['geometry']
         propertys = feature['properties']
-        if not (geometry['type'] == 'Point' and propertys['_iconUrl'] == 'symbols/Summit.png'):
+        if not (geometry['type'] == 'Point' and propertys['_iconUrl'] == ICON_SUMMIT):
             continue
-        coordinates = geometry['coordinates']
+        lon, lat = geometry['coordinates']
         name = propertys['name']
-        lon = coordinates[0]
-        lat = coordinates[1]
         # find nearest point
         cursor2.execute(f"SET @p=ST_GeomFromText('POINT({lon} {lat})',4326,'axis-order=long-lat')")
         cursor2.execute('SELECT id,name,ST_Distance_Sphere(pt,@p) AS d FROM geom ORDER BY d LIMIT 1')
         id, name, d = cursor2.fetchone()
-        if d < 40:
+        if d < 40: # less than 40m
             d = round(d, 1)
             print(f'INSERT INTO explored VALUES (@rec,NULL,{id}); -- {name},{d}m')
 
 # command line arguments
-if len(sys.argv) < 1:
+if len(sys.argv) != 2:
     print(f"Usage: {sys.argv[0]} <cid>", file=sys.stderr)
     sys.exit(1)
 cid = sys.argv[1] # Content ID
