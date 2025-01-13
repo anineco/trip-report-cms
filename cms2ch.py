@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 from datetime import datetime
-import os
 import sqlite3
 import sys
 
@@ -10,7 +9,7 @@ from jinja2 import Environment, FileSystemLoader
 
 from utils import jp_period_short
 
-if len(sys.argv) < 2:
+if len(sys.argv) != 2:
     print(f"Usage: {sys.argv[0]} <year>", file=sys.stderr)
     sys.exit(1)
 year = sys.argv[1]

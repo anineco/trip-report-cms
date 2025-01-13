@@ -22,25 +22,22 @@ context = {
     'chron': []
 }
 
-# 年別更新履歴
+# 年別更新履歴 (Update History by Year)
 
-for year in range(int(lm_year), 2003, -1):
+for year in range(int(lm_year), 2003, -1): # CAUTION: the first year is hard-coded
     context['hist'].append({
         'year': year,
         'url': 'hist{:02d}.html'.format(year % 100)
     })
 
-# 年別山行記録
+# 年別山行記録 (Trip Records by Year)
 
 connection = sqlite3.connect('data/metadata.sqlite3')
 cursor = connection.cursor()
 
-for year in range(int(lm_year), 1997, -1):
+for year in range(int(lm_year), 1997, -1): # CAUTION: the first year is hard-coded
     data = [] # NOTE: data = [ {period, title, link}, ... ]
-    cursor.execute('''
-    SELECT start, end, title, link FROM metadata
-    WHERE start LIKE ? ORDER BY start
-    ''' , (f"{year}%",))
+    cursor.execute('SELECT start, end, title, link FROM metadata WHERE start LIKE ? ORDER BY start', (f"{year}%",))
     for start, end, title, link in cursor.fetchall():
         s = datetime.strptime(start, '%Y-%m-%d')
         e = datetime.strptime(end, '%Y-%m-%d')

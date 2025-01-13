@@ -26,11 +26,9 @@ lm_year = lm_date[0:4]
 lmyy = lm_date[2:4]
 
 # add prefix 'VITE_' for Vite environment variables
-print(f'''
-VITE_YEAR={year}
-VITE_LM_DATE={lm_date}
-VITE_LM_YEAR={lm_year}
-VITE_LMYY={lmyy}
-''')
+print(f'VITE_YEAR={year}')
+print(f'VITE_LM_DATE={lm_date}')
+print(f'VITE_LM_YEAR={lm_year}')
+print(f'VITE_LMYY={lmyy}')
 
 # __END__

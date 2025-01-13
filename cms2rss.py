@@ -10,9 +10,7 @@ from jinja2 import Environment, FileSystemLoader
 from utils import jp_period
 
 # command line arguments
-rss_version = '1.0'
-if len(sys.argv) > 1:
-    rss_version = sys.argv[1]
+rss_version = sys.argv[1] if len(sys.argv) == 2 else '1.0'
 if not rss_version in ['1.0', '2.0']:
     print(f"Usage: {sys.argv[0]} [1.0|2.0]", file=sys.stderr)
     sys.exit(1)

@@ -12,7 +12,7 @@ import togeojson
 
 WORKSPACE = os.path.expanduser(config.WORKSPACE)
 
-if len(sys.argv) < 2:
+if len(sys.argv) != 2:
     print(f"Usage: {sys.argv[0]} <cid>", file=sys.stderr)
     sys.exit(1)
 
@@ -40,7 +40,6 @@ for s in resource['section']:
     try:
         process = subprocess.Popen(cmd, stdout=subprocess.PIPE)
         xml = process.stdout.read()
-        # print(xml.decode('utf-8'))
     except subprocess.CalledProcessError as e:
         print(f"Error: {e}", file=sys.stderr)
         sys.exit(1)

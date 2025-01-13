@@ -11,7 +11,7 @@ import config
 WORKSPACE = os.path.expanduser(config.WORKSPACE)
 
 # command line arguments
-if len(sys.argv) < 2:
+if len(sys.argv) != 2:
     print(f"Usage: {sys.argv[0]} <cid>", file=sys.stderr)
     sys.exit(1)
 
@@ -21,21 +21,16 @@ cid = sys.argv[1] # Content ID
 with open(f"{WORKSPACE}/{cid}.json", "r") as f:
     resource = json.load(f)
 
-cmd = "bash"  # 実行するコマンド
+# provide shell script to squoosh images
+cmd = [ "bash", "-eu" ]
 try:
-    # コマンドを起動し、標準入力を開く
-    process = subprocess.Popen([cmd], shell=True, stdin=subprocess.PIPE, text=True)
-
-    # サブプロセスの標準入力にデータを書き込む
+    process = subprocess.Popen(cmd, shell=True, stdin=subprocess.PIPE, text=True)
     process.stdin.write('''
-set -eu
 TMOZ=$(mktemp -d moz.XXXXXX)
 trap 'rm -rf $TMOZ' EXIT
 function squoosh () {
 # source width height target
   local s=$1 w=$2 h=$3 t=$4
-  local x=${s##*/}
-  local b=${x%.*}
   sharp --quality 75 --mozjpeg --input $s --output $t.jpg  -- resize $w $h
   sharp --quality 45           --input $s --output $t.avif -- resize $w $h
 }
@@ -79,9 +74,7 @@ squoosh_crop {s} 240 240 {d}/Q{t}
             process.stdin.write(f"squoosh {s} {w} {h} {d}/{t}\n")
             process.stdin.write(f"squoosh {s} {2*w} {2*h} {d}/2x/{t}\n")
                       
-    process.stdin.close()  # 入力を閉じる
-
-    # コマンドの終了を待つ
+    process.stdin.close()
     process.wait()
 except OSError as e:
     print(f"Can't execute {cmd}: {e}")
