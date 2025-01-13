@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+import datetime
 
 def iso_period(s, e): # datetime object
     """Return a string of period in ISO format."""
