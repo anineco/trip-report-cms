@@ -59,6 +59,10 @@ header div {
 #logo {
   height: 100px;
   background-image: url(../image/header1x.jpg);
+  background-image: -webkit-image-set(
+    url(../image/header1x.avif) 1x type("image/avif"),
+    url(../image/header2x.avif) 2x type("image/avif")
+  );
   background-image: image-set(
     url(../image/header1x.avif) 1x type("image/avif"),
     url(../image/header2x.avif) 2x type("image/avif")
