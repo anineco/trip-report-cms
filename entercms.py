@@ -61,17 +61,14 @@ for arg in sys.argv[1:]:
             datespan = match.group(1).split('/')
             start = datespan[0]
             if len(datespan) > 1:
-                e = datespan[1]
+                e = datespan[1].split('-')
                 y, m, d = start.split('-')
-                if match := re.search(r'(\d+)-(\d+)-(\d+)', e):
-                    y = match.group(1)
-                    m = match.group(2)
-                    d = match.group(3)
-                elif match := re.search(r'(\d+)-(\d+)', e):
-                    m = match.group(1)
-                    d = match.group(2)
-                elif match := re.search(r'(\d+)', e):
-                    d = match.group(1)
+                if len(e) == 3:
+                    y, m, d = e
+                elif len(e) == 2:
+                    m, d = e
+                else:
+                    d = e
                 end = f"{y}-{m}-{d}"
             else:
                 end = start
