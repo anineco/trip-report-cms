@@ -14,6 +14,7 @@ import xml.etree.ElementTree as ET
 from exiftool import ExifToolHelper
 
 import config
+from const import namespaces
 
 WORKSPACE = os.path.expanduser(config.WORKSPACE)
 MATERIAL_GPX = os.path.expanduser(config.MATERIAL_GPX)
@@ -22,21 +23,17 @@ MATERIAL_IMG = os.path.expanduser(config.MATERIAL_IMG)
 ICON_SUMMIT = '952015' # kashmir3d:icon
 
 # command line arguments
-if len(sys.argv) < 3:
+if len(sys.argv) != 3:
     print(f"Usage: {sys.argv[0]} <cid> <title>", file=sys.stderr)
     sys.exit(1)
 
-cid = sys.argv[1] # Content ID
+cid = sys.argv[1]   # Content ID
 title = sys.argv[2] # Title
 
 resource = { 'cid': cid, 'title': title, 'section': [] }
 
-namespaces = {
-    '': 'http://www.topografix.com/GPX/1/1',
-    'kashmir3d': 'http://www.kashmir3d.com/namespace/kashmir3d'
-}
-
-def read_section(files): # read GPX files
+# generate a section containing photos sectioning by the time of waypoints
+def read_section(files): # gpx files
     wpts = []
     trkpts_unsorted = []
     for file in files:
@@ -48,19 +45,19 @@ def read_section(files): # read GPX files
                 'icon': wpt.find(".//kashmir3d:icon", namespaces).text,
                 'name': wpt.find("name", namespaces).text
             }
-            if item['icon'] == ICON_SUMMIT:
-                for cmt in wpt.findall("cmt", namespaces):
-                    for row in cmt.text.split(','):
-                        key, value = row.split('=')
-                        if key == '標高': # elevation
-                            item['ele'] = value
+            if item['icon'] == ICON_SUMMIT and (cmt := wpt.find("cmt", namespaces)) is not None:
+                for row in cmt.text.split(','):
+                    key, value = row.split('=')
+                    if key == '標高': # 'elevation'
+                        item['ele'] = value
+                        break
             wpts.append(item)
 
         for trk in root.findall(".//trk", namespaces):
             for trkseg in trk.findall("trkseg", namespaces):
                 for trkpt in trkseg.findall("trkpt", namespaces):
                     time = trkpt.find("time", namespaces).text
-                    t = datetime.strptime(time, "%Y-%m-%dT%H:%M:%SZ") # UTC
+                    t = datetime.strptime(time, "%Y-%m-%dT%H:%M:%SZ") # UTC aka Zulu time
                     t += timedelta(hours=9) # translate to JST
                     item = {
                         'lat': trkpt.get('lat'),
@@ -106,8 +103,8 @@ def read_section(files): # read GPX files
         n1 = trkpt['nearest']
         if n1 < 0:
             continue
-        n0 = -1 if i < 1 else trkpts[i - 1]['nearest']
-        n2 = -1 if i > m - 1 else trkpts[i + 1]['nearest']
+        n0 = trkpts[i - 1]['nearest'] if i > 0 else -1 
+        n2 = trkpts[i + 1]['nearest'] if i < m else -1
         if n0 != n1:
             start = trkpt['time']
         if n1 != n2:
@@ -122,7 +119,7 @@ def read_section(files): # read GPX files
                 summits.append(q['name'])
             timeline.append(item)
 
-    t = timeline[0]['timespan'][0].split('T')
+    t = timeline[0]['timespan'][0].split('T') # start date, time
     return {
         'title': title or '〜'.join(summits),
         'date': t[0],
@@ -131,7 +128,7 @@ def read_section(files): # read GPX files
         'photo': []
     }
 
-# set source GPX files and file name of routemap
+# set source gpx files and file name of routemap
 for track in glob.glob(f"{MATERIAL_GPX}/{cid}/trk*.gpx"):
     if match := re.search(r".*/trk(\d?)\.gpx", track):
         c = match.group(1)
@@ -142,7 +139,7 @@ for track in glob.glob(f"{MATERIAL_GPX}/{cid}/trk*.gpx"):
         resource['section'].append(section)
 
 # set start and end date to resource
-if 'section' in resource:
+if len(resource['section']) > 0:
     resource['date'] = {
         'start': resource['section'][0]['date'],
         'end': resource['section'][-1]['date']
@@ -155,9 +152,9 @@ else:
     resource['section'] = { 'timespan': [ f'{ymd}T00:00:00', f'{ymd}T23:59:59' ] }
 
 # set cover image to resource
-hash = {}
+hash = set()
 covers = glob.glob(f"{MATERIAL_IMG}/{cid}/cover/*")
-if len(covers) == 0:
+if len(covers) < 1:
     print(f"No cover image found: {cid}", file=sys.stderr)
     sys.exit(1)
 file = covers[0]
@@ -168,7 +165,7 @@ if not match:
     sys.exit(1)
 key = match.group(1)
 resource['cover'] = { 'file': file, 'hash': key }
-hash['key'] = 1
+hash.add('key')
 
 # load photo's metadata
 photos_unsorted = []
@@ -183,14 +180,14 @@ for file in glob.glob(f"{MATERIAL_IMG}/{cid}/*[0-9][0-9][0-9][0-9].*"):
     if key in hash and key != resource['cover']['hash']:
         for c in string.ascii_lowercase:
             if (keyc := key + c) not in hash:
-                hash[keyc] = 1
+                hash.add(keyc)
                 item['hash'] = keyc
                 break
         if 'hash' not in item:
             print(f"Too many photos: {cid}", file=sys.stderr)
             sys.exit(1)
     else:
-        hash[key] = 1
+        hash.add(key)
         item['hash'] = key
 
     with ExifToolHelper() as et:
@@ -219,6 +216,7 @@ for photo in photos:
         if i == n or t < section['timespan'][1]:
             section['photo'].append(photo)
             break
+        # calculate midtime between current and next section
         t1 = datetime.strptime(section['timespan'][1], "%Y-%m-%dT%H:%M:%S")
         t2 = datetime.strptime(resource['section'][i + 1]['timespan'][0], "%Y-%m-%dT%H:%M:%S")
         tc = t1 + (t2 - t1) / 2
