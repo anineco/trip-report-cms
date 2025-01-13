@@ -28,11 +28,11 @@ def jp_period(s, e): # datetime object
 
 def jp_period_short(s, e): # datetime object
     """Return a string of period in Japanese short format."""
-    start = f"{s.month}年{s.day}日"
+    start = f"{s.month}月{s.day}日"
     if s.year != e.year or s.month != e.month:
-        end = f"{e.month}/{e.day}"
+        end = f"{e.month}月{e.day}日"
     elif s.day != e.day:
-        end = f"{e.day}"
+        end = f"{e.day}日"
     else:
         return start
     return f"{start}〜{end}"

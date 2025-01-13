@@ -8,9 +8,9 @@ import sys
 
 from jinja2 import Environment, FileSystemLoader
 
-from utils import jp_period_short
+from utils import iso_period
 
-if len(sys.argv) < 2:
+if len(sys.argv) != 2:
     print(f"Usage: {sys.argv[0]} <year>", file=sys.stderr)
     sys.exit(1)
 year = sys.argv[1]
@@ -29,7 +29,7 @@ ORDER BY pub DESC,start
 for cid, start, end, pub, title, link in cursor.fetchall():
     s = datetime.strptime(start, '%Y-%m-%d')
     e = datetime.strptime(end, '%Y-%m-%d')
-    period = jp_period_short(s, e)
+    period = iso_period(s, e)
     content = f'{period} <a href="{link}">{title}</a> の山行記録を追加。'
     data.setdefault(pub, []).append(content)
 

@@ -9,7 +9,7 @@
 <item>
 <title>{{ item.title }}</title>
 <link>https://anineco.org/{{ item.link }}</link>
-<description>{{ item.perod }} {{ item.summary }}</description>
+<description>{{ item.period }} {{ item.summary }}</description>
 <content:encoded><![CDATA[<img src="https://anineco.org/{{ item.img1x }}" srcset="https://anineco.org/{{ item.img2x }} 2x" width="120" height="90">]]></content:encoded>
 <dc:subject>登山</dc:subject>
 <dc:creator>あにねこ</dc:creator>

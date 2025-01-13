@@ -8,7 +8,7 @@ import sqlite3
 from dotenv import load_dotenv
 from jinja2 import Environment, FileSystemLoader
 
-from utils import jp_period_short
+from utils import jp_period
 
 load_dotenv(dotenv_path='.env.local')
 lm_date = os.getenv('VITE_LM_DATE')
@@ -39,7 +39,7 @@ for cid, start, end, pub, title, summary, link, img1x, img2x in cursor.fetchall(
 
     context['items'].append({
         'cid': cid,
-        'period': jp_period_short(s, e),
+        'period': jp_period(s, e),
         'title': title,
         'summary': summary,
         'link': link,

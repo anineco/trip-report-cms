@@ -40,9 +40,9 @@
 <ul>
 {% for r in c.record %}
 {% if r.link %}
-<li><a title="{{ r.datespan }}" href="{{ r.link }}">{{ r.title }}</a></li>
+<li><a title="{{ r.period }}" href="{{ r.link }}">{{ r.title }}</a></li>
 {% else %}
-<li><span title="{{ r.datespan }}">{{ r.title }}</span></li>
+<li><span title="{{ r.period }}">{{ r.title }}</span></li>
 {% endif %}
 {% endfor %}
 </ul>
