@@ -15,10 +15,14 @@ TARGET_ENV = .env.local
 
 .ONESHELL:
 
-all: ${TARGET_HTML} ${TARGET_RDF} # ${TARGET_CSS} ${TARGET_JS} ${TARGET_ENV}
+all: ${TARGET_HTML} ${TARGET_RDF} ${TARGET_ENV}
 
-.env.local: data/metadata.sqlite3 latest.sh
-	./latest.sh > $@
+css: ${TARGET_CSS}
+
+js: ${TARGET_JS}
+
+.env.local: data/metadata.sqlite3 latest.py
+	./latest.py > $@
 
 ${DOCS}index.html: data/metadata.sqlite3 cms2idx.py template/index.html .env.local
 	./cms2idx.py > $@
