@@ -6,6 +6,7 @@ YEAR = ${VITE_YEAR}
 LM_YEAR = ${VITE_LM_YEAR}
 LMYY = ${VITE_LMYY}
 
+# defined in config.py
 DIST_DIR = ./dist
 DATA_DIR = ./data
 
@@ -23,25 +24,25 @@ css: ${TARGET_CSS}
 
 js: ${TARGET_JS}
 
-.env.local: ${DATA_DIR}/metaDATA_DIR.sqlite3 latest.py
+.env.local: ${DATA_DIR}/metadata.sqlite3 latest.py
 	./latest.py > $@
 
-${DIST_DIR}/index.html: ${DATA_DIR}/metaDATA_DIR.sqlite3 cms2idx.py template/index.html .env.local
+${DIST_DIR}/index.html: ${DATA_DIR}/metadata.sqlite3 cms2idx.py template/index.html .env.local
 	./cms2idx.py > $@
 
-${DIST_DIR}/toc.html: ${DATA_DIR}/metaDATA_DIR.sqlite3 cms2toc.py template/toc.html .env.local
+${DIST_DIR}/toc.html: ${DATA_DIR}/metadata.sqlite3 cms2toc.py template/toc.html .env.local
 	./cms2toc.py > $@
 
-${DIST_DIR}/ch${YEAR}.html: ${DATA_DIR}/metaDATA_DIR.sqlite3 cms2ch.py template/ch.html
+${DIST_DIR}/ch${YEAR}.html: ${DATA_DIR}/metadata.sqlite3 cms2ch.py template/ch.html
 	./cms2ch.py ${YEAR} > $@
 
-${DIST_DIR}/hist${LMYY}.html: ${DATA_DIR}/metaDATA_DIR.sqlite3 ${DATA_DIR}/changelog.csv cms2hist.py template/hist.html
+${DIST_DIR}/hist${LMYY}.html: ${DATA_DIR}/metadata.sqlite3 ${DATA_DIR}/changelog.csv cms2hist.py template/hist.html
 	./cms2hist.py ${LM_YEAR} > $@
 
-${DIST_DIR}/tozan.rdf: ${DATA_DIR}/metaDATA_DIR.sqlite3 cms2rss.py template/rss10.xml
+${DIST_DIR}/tozan.rdf: ${DATA_DIR}/metadata.sqlite3 cms2rss.py template/rss10.xml
 	./cms2rss.py 1.0 > $@
 
-${DIST_DIR}/tozan2.rdf: ${DATA_DIR}/metaDATA_DIR.sqlite3 cms2rss.py template/rss20.xml
+${DIST_DIR}/tozan2.rdf: ${DATA_DIR}/metadata.sqlite3 cms2rss.py template/rss20.xml
 	./cms2rss.py 2.0 > $@
 
 ${DIST_DIR}/css/%.css: src/%.css
@@ -61,8 +62,9 @@ ${DIST_DIR}/msearch/default.db: .dummy
 	(cd ${DIST_DIR}/msearch; ./genindex.pl)
 
 lint:
-	./htmllint.sh ${DIST_DIR}/*.html
-	npx htmlhint "${DIST_DIR}/*.html"
+	# NOTE: exclude google*.html
+	./htmllint.sh ${DIST_DIR}/[^g]*.html
+	npx htmlhint "${DIST_DIR}/[^g]*.html"
 
 clean:
 	rm -f ${TARGET_HTML} ${TARGET_RDF} ${TARGET_CSS} ${TARGET_ENV}

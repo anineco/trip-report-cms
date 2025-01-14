@@ -1,7 +1,9 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
-# HTML formatter
+# a simple HTML LS formatter
 
+import re
 import sys
 from lxml import etree as ET
 
@@ -15,7 +17,12 @@ else:
     print('Usage: formatter.py [<file>]', file=sys.stderr)
     sys.exit()
 
+# replace '<source>' with a self-closing element
+text = re.sub(r'<source([^>]*)>', r'<source\1/>', text)
+# NOTE: this will result in the output containing '</source>'
+
 html = ET.fromstring(text, ET.HTMLParser())
 ret = ET.tostring(html, method='html', encoding='unicode', doctype='<!DOCTYPE html>')
-# FIXME: sourceは空要素であるが余分な終了タグが付加されるので削除
 print(ret.replace('</source>', ''))
+
+# __END__
