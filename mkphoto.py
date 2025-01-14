@@ -2,13 +2,10 @@
 # -*- coding: utf-8 -*-
 
 import json
-import os
 import subprocess
 import sys
 
-import config
-
-WORKSPACE = os.path.expanduser(config.WORKSPACE)
+from config import WORK_DIR
 
 # command line arguments
 if len(sys.argv) != 2:
@@ -18,7 +15,7 @@ if len(sys.argv) != 2:
 cid = sys.argv[1] # Content ID
 
 # read json file
-with open(f"{WORKSPACE}/{cid}.json", "r") as f:
+with open(f"{WORK_DIR}/{cid}.json", "r") as f:
     resource = json.load(f)
 
 # provide shell script to squoosh images
@@ -53,7 +50,7 @@ function squoosh_crop () {
 }
 ''')
 
-    d = f'{WORKSPACE}/{cid}'
+    d = f'{WORK_DIR}/{cid}'
     s = resource['cover']['file']
     t = resource['cover']['hash']
 

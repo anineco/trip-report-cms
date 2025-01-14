@@ -2,15 +2,12 @@
 # -*- coding: utf-8 -*-
 
 import json
-import os
 import subprocess
 import sys
 import lxml.etree as ET
 
-import config
+from config import WORK_DIR
 import togeojson
-
-WORKSPACE = os.path.expanduser(config.WORKSPACE)
 
 if len(sys.argv) != 2:
     print(f"Usage: {sys.argv[0]} <cid>", file=sys.stderr)
@@ -19,7 +16,7 @@ if len(sys.argv) != 2:
 cid = sys.argv[1] # Content ID
 
 # read json file
-with open(f"{WORKSPACE}/{cid}.json", "r") as f:
+with open(f"{WORK_DIR}/{cid}.json", "r") as f:
     resource = json.load(f)
 
 xt_error = 0.005 # cross track error in km
@@ -47,7 +44,7 @@ for s in resource['section']:
     root = ET.fromstring(xml)
     
     geojson = togeojson.togeojson(root, line_size, line_style, opacity)
-    with open(f"{WORKSPACE}/{cid}/{routemap}", "w", encoding='utf-8') as f:
+    with open(f"{WORK_DIR}/{cid}/{routemap}", "w", encoding='utf-8') as f:
         f.write(json.dumps(geojson, ensure_ascii=False, separators=(',', ':')))
         f.write('\n')
 

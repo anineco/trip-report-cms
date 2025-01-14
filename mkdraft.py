@@ -4,15 +4,12 @@
 from datetime import datetime, timedelta
 import json
 import math
-import os
 import sys
 
 from jinja2 import Environment, FileSystemLoader
 
-import config
+from config import WORK_DIR
 from utils import iso_period, jp_datespan
-
-WORKSPACE = os.path.expanduser(config.WORKSPACE)
 
 # round time to the nearest 5 minutes
 def round_time(t): # datetime object
@@ -66,7 +63,7 @@ def center(min_lon, min_lat, max_lon, max_lat): # bbox
 
 # generate routemap URL
 def gen_routemap(routemap):
-    file = f"{WORKSPACE}/{cid}/{routemap}"
+    file = f"{WORK_DIR}/{cid}/{routemap}"
     with open(file, 'r', encoding='utf-8') as f:
         data = json.load(f)
     if not 'bbox' in data:
@@ -111,7 +108,7 @@ cid = sys.argv[1] # Content ID
 description = '⚠️ This article is a draft'
 
 # load resource json
-with open(f"{WORKSPACE}/{cid}.json", 'r', encoding='utf-8') as f:
+with open(f"{WORK_DIR}/{cid}.json", 'r', encoding='utf-8') as f:
     resource = json.load(f)
 
 # set template context
@@ -136,7 +133,7 @@ context = {
 # Jinja2 template rendering
 env = Environment(loader=FileSystemLoader('template'), trim_blocks=True)
 template = env.get_template('draft.html')
-with open(f"{WORKSPACE}/{cid}.html", "w", encoding='utf-8') as f:
+with open(f"{WORK_DIR}/{cid}.html", "w", encoding='utf-8') as f:
     f.write(template.render(context))
     f.write('\n')
 # __END__

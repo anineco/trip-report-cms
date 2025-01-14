@@ -3,7 +3,7 @@
 
 import glob
 import json
-import os
+import os.path
 import sqlite3
 import sys
 
