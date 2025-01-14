@@ -57,22 +57,9 @@
 </li>
 <li>地図から選択
 <ul>
-<li><a href="map.html?idx=0">全山行記録</a></li>
-<li><a href="map.html?idx=1">日本の主な山岳</a></li>
-<li><a href="map.html?idx=2">日本三百名山</a></li>
-<li><a href="map.html?idx=3">ぐんま百名山</a></li>
-<li><a href="map.html?idx=4">群馬300山</a></li>
-<li><a href="map.html?idx=5">栃木百名山</a></li>
-<li><a href="map.html?idx=6">埼玉百山</a></li>
-<li><a href="map.html?idx=7">東京百名山</a></li>
-<li><a href="map.html?idx=8">かながわ百名山</a></li>
-<li><a href="map.html?idx=9">信州百名山</a></li>
-<li><a href="map.html?idx=10">山梨百名山</a></li>
-<li><a href="map.html?idx=11">うつくしま百名山</a></li>
-<li><a href="map.html?idx=12">新うつくしま百名山</a></li>
-<li><a href="map.html?idx=13">越後百山</a></li>
-<li><a href="map.html?idx=14">桐生地域百山</a></li>
-<li><a href="map.html?idx=15">足利百名山</a></li>
+{% for item in category %}
+<li><a href="map.html?idx={{ loop.index0 }}">{{ item.name }}</a></li>
+{% endfor %}
 <li><a href="map/help.html">ヘルプとクレジット</a></li>
 </ul>
 </li>

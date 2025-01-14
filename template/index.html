@@ -55,22 +55,9 @@
 <ul>
 <li><select onchange="location.assign('map.html?idx='+(this.selectedIndex-1));" aria-label="カテゴリ">
 <option selected>--カテゴリ--</option>
-<option>全山行記録</option>
-<option>日本の主な山岳</option>
-<option>日本三百名山</option>
-<option>ぐんま百名山</option>
-<option>群馬300山</option>
-<option>栃木百名山</option>
-<option>埼玉百山</option>
-<option>東京百名山</option>
-<option>かながわ百名山</option>
-<option>信州百名山</option>
-<option>山梨百名山</option>
-<option>うつくしま百名山</option>
-<option>新うつくしま百名山</option>
-<option>越後百山</option>
-<option>桐生地域百山</option>
-<option>足利百名山</option>
+{% for item in category %}
+<option>{{ item.name }}</option>
+{% endfor %}
 </select></li>
 </ul>
 <h2>雑記</h2>

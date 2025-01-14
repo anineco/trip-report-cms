@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 
 from datetime import datetime
-import os
+import json
+from os import getenv
 import sqlite3
 
 from dotenv import load_dotenv
@@ -12,9 +13,9 @@ from config import DATA_DIR
 from utils import iso_period
 
 load_dotenv(dotenv_path='.env.local')
-year = os.getenv('VITE_YEAR')
-lm_date = os.getenv('VITE_LM_DATE')
-lm_year = os.getenv('VITE_LM_YEAR')
+year = getenv('VITE_YEAR')
+lm_date = getenv('VITE_LM_DATE')
+lm_year = getenv('VITE_LM_YEAR')
 
 context = {
     'lm_date': lm_date,
@@ -56,6 +57,12 @@ for year in range(int(lm_year), 1997, -1): # CAUTION: the first year is hard-cod
     })
 
 connection.close()
+
+# 地図から選択 (Select from Map)
+
+with open('src/category.json', 'r', encoding='utf-8') as f:
+    category = json.load(f)['category']
+context['category'] = [ { 'name': c[4] } for c in category ]
 
 # Jinja2 template
 env = Environment(loader=FileSystemLoader('template'), trim_blocks=True)
