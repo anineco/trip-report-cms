@@ -7,6 +7,7 @@ import sys
 
 from jinja2 import Environment, FileSystemLoader
 
+from config import DATA_DIR
 from utils import jp_period_short
 
 if len(sys.argv) != 2:
@@ -20,7 +21,7 @@ context = {
 }
 
 # read data base
-connection = sqlite3.connect('data/metadata.sqlite3')
+connection = sqlite3.connect(f'{DATA_DIR}/metadata.sqlite3')
 cursor = connection.cursor()
 
 lm_year = 2022 # NOTE: backward compatibility

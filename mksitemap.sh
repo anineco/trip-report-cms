@@ -1,5 +1,4 @@
 #!/bin/sh
-cd docs
 echo '<?xml version="1.0" encoding="UTF-8"?>'
 echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
 /bin/ls -l -T *.html| while read p l u g s m d t y n; do

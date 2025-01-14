@@ -4,9 +4,11 @@
 import csv
 import sqlite3
 
+from config import DATA_DIR
+
 # find the latest dates from metadata and changelog
 
-connection = sqlite3.connect('data/metadata.sqlite3')
+connection = sqlite3.connect(f'{DATA_DIR}/metadata.sqlite3')
 cursor = connection.cursor()
 
 cursor.execute('SELECT max(start), max(pub) FROM metadata')
@@ -15,7 +17,7 @@ date1, date2 = cursor.fetchone()
 connection.close()
 
 date3 = '0000-00-00'
-with open('data/changelog.csv', mode='r') as f:
+with open(f'{DATA_DIR}/changelog.csv', mode='r') as f:
     for pub, content in csv.reader(f):
         if date3 < pub:
             date3 = pub

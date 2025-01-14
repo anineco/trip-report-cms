@@ -5,7 +5,7 @@ import env from 'vite-plugin-env-compatible';
 
 const root = resolve(__dirname, 'src');
 const base = './';
-const outDir = resolve(__dirname, 'docs/js');
+const outDir = resolve(__dirname, 'dist/js');
 
 export default defineConfig({
   root,

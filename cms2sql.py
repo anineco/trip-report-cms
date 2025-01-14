@@ -9,15 +9,17 @@ import sys
 
 import mysql.connector
 
+from config import DATA_DIR, DIST_DIR, HOME
+
 ICON_SUMMIT = 'symbols/Summit.png'
 
 # open metadata database of trip reports
-connection1 = sqlite3.connect('data/metadata.sqlite3')
+connection1 = sqlite3.connect(f'{DATA_DIR}/metadata.sqlite3')
 cursor1 = connection1.cursor()
 
 # open geologiacl database of mountains for nearest point search
 connection2 = mysql.connector.connect(
-    option_files=os.path.expanduser('~/.my.cnf'),
+    option_files=os.path.expanduser(f'${HOME}/.my.cnf'),
     database='anineco_tozan'
 )
 cursor2 = connection2.cursor()
@@ -56,7 +58,7 @@ print(f'INSERT INTO record VALUES (NULL,"{start}","{end}","{pub}","{title}","{su
 print('SET @rec=LAST_INSERT_ID();')
 
 # write SQL for register explored points
-for file in glob.glob(f"docs/{cid}/routemap*.geojson"):
+for file in glob.glob(f"{DIST_DIR}/{cid}/routemap*.geojson"):
     read_geojson(file)
 
 connection1.close()

@@ -1,13 +1,15 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import os
+import os.path
 import re
 import sqlite3
 import sys
 
+from config import DIST_DIR, DATA_DIR
+
 # open database connection
-connection = sqlite3.connect('data/metadata.sqlite3')
+connection = sqlite3.connect(f'{DATA_DIR}/metadata.sqlite3')
 cursor = connection.cursor()
 
 # create table
@@ -26,9 +28,10 @@ CREATE TABLE IF NOT EXISTS metadata (
 ''')
 connection.commit()
 
-# $ sqlite3 data/metadata.sqlite3
+# $ cd DATA_DIR
+# $ sqlite3 metadata.sqlite3
 # sqlite> .mode csv
-# sqlite> .import data/metadata_no_page.csv metadata
+# sqlite> .import metadata_no_page.csv metadata
 # sqlite> .quit
 
 # parse command line arguments
@@ -52,7 +55,7 @@ for arg in sys.argv[1:]:
         cid = os.path.splitext(os.path.basename(arg))[0]
     else:
         cid = arg
-        filename = f"docs/{cid}.html"
+        filename = f"${DIST_DIR}/{cid}.html"
     link = f"{cid}.html"
     pub = summary = img1x = img2x = ""
     f = open(filename, 'r', encoding='utf-8')

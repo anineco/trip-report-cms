@@ -8,6 +8,7 @@ import sqlite3
 from dotenv import load_dotenv
 from jinja2 import Environment, FileSystemLoader
 
+from config import DATA_DIR
 from utils import jp_period
 
 load_dotenv(dotenv_path='.env.local')
@@ -25,7 +26,7 @@ context = {
 }
 
 # read data base
-connection = sqlite3.connect('data/metadata.sqlite3')
+connection = sqlite3.connect(f'{DATA_DIR}/metadata.sqlite3')
 cursor = connection.cursor()
 
 cursor.execute('''

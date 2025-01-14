@@ -8,6 +8,7 @@ import sys
 
 from jinja2 import Environment, FileSystemLoader
 
+from config import DATA_DIR
 from utils import iso_period
 
 if len(sys.argv) != 2:
@@ -18,7 +19,7 @@ year = sys.argv[1]
 data = {} # NOTE: data = { pub => [content, ...] }
 
 # read data base
-connection = sqlite3.connect('data/metadata.sqlite3')
+connection = sqlite3.connect(f'{DATA_DIR}/metadata.sqlite3')
 cursor = connection.cursor()
 
 cursor.execute('''
@@ -30,13 +31,13 @@ for cid, start, end, pub, title, link in cursor.fetchall():
     s = datetime.strptime(start, '%Y-%m-%d')
     e = datetime.strptime(end, '%Y-%m-%d')
     period = iso_period(s, e)
-    content = f'{period} <a href="{link}">{title}</a> の山行記録を追加。'
+    content = f'{period} <a href="{link}">{title}</a> の山行記録を追加。' # NOTE: customize content
     data.setdefault(pub, []).append(content)
 
 connection.close()
 
 # read changelog
-with open('data/changelog.csv', 'r', encoding='utf-8') as f:
+with open(f'{DATA_DIR}/changelog.csv', 'r', encoding='utf-8') as f:
     for pub, content in csv.reader(f):
         if pub.startswith(year):
             data.setdefault(pub, []).append(content)
