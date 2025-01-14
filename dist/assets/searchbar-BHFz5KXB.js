@@ -1,0 +1,1 @@
+import{C as a}from"./index-BYzSYGK_.js";class c extends a{constructor(e={}){const s=e.element;super({element:s}),this.container=s,this.container.className=e.className||"ol-searchbar ol-unselectable"}}export{c as S};

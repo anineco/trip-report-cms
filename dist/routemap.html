@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="robots" content="noindex,nofollow">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+    <meta name="referrer" content="origin"><!-- NOTE: for Bing Maps -->
+    <title>ルート地図</title>
+    <link rel="canonical" href="https://anineco.org/routemap.html">
+    <style>
+      html, body, #map { margin:0; padding:0; border:0; width:100%; height:100%; }
+    </style>
+    <script type="module" crossorigin src="./assets/routemap-bqcnP3Jd.js"></script>
+    <link rel="modulepreload" crossorigin href="./assets/index-BYzSYGK_.js">
+    <link rel="modulepreload" crossorigin href="./assets/toolbar-o_ukZz47.js">
+    <link rel="stylesheet" crossorigin href="./assets/routemap-6r9rZ1je.css">
+  </head>
+  <body>
+    <div id="map">
+      <div id="centercross"></div>
+      <div id="toolbar">
+        <div id="menu1">
+          <div style="display:flex;">
+            <button id="tb_menu2" title="メニュー" type="button">≡</button>
+            <button id="tb_center" title="中心座標" type="button">⌖</button>
+            <select id="tb_base" title="マップ"></select>
+            <select id="tb_zoom" title="ズーム"></select>
+            <button id="tb_print" title="印刷" onclick="window.print()" type="button">印刷</button>
+            <button id="tb_exit" title="終了" onclick="window.close()" type="button">✖️</button>
+          </div>
+        </div>
+        <div id="menu2" style="display:none;">
+          <div style="display:flex;">
+            <input id="tb_track" type="checkbox" checked>
+            <label for="tb_track">GPSログ</label>
+            <input id="tb_cross" type="checkbox" checked>
+            <label for="tb_cross">中心十字</label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

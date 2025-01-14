@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta http-equiv="content-style-type" content="text/css">
+<link href="style.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+<script type="text/javascript">
+google.load("visualization", "1", {packages:["corechart"]});
+google.setOnLoadCallback(drawChart);
+function drawChart() {
+	// データ定義
+	var data = google.visualization.arrayToDataTable([
+		['', ''],
+		!data!
+	]);
+
+	// オプション指定
+	var options = {
+		//title: '!subttl!',
+		backgroundColor: '#fff',
+		//is3D: true
+	};
+
+	// 円グラフ描画
+	var chart = new google.visualization.PieChart(document.getElementById('chart'));
+	chart.draw(data, options);
+}
+</script>
+<title>集計リスト</title>
+</head>
+<body>
+
+<input type="button" value="TOPに戻る" onclick="window.open('!homepage!','_self')">
+
+<div class="ta-c">
+<h1>集計リスト</h1>
+
+<form action="!list_cgi!">
+<!-- categ -->
+カテゴリー：
+<select name="cate">
+<!-- op_cate -->
+</select> &nbsp;
+<!-- categ -->
+グラフ：
+<select name="chart">
+<!-- op_chart -->
+</select>
+<input type="submit" value="切替">
+</form>
+
+<div id="chart"></div>
+
+</div>
+
+</body>
+</html>

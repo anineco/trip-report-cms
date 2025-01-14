@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="robots" content="noindex,nofollow">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<link href="!bbs_css!" rel="stylesheet">
+<script src="!bbs_js!"></script>
+<title>トピック関連記事</title>
+</head>
+<body>
+
+<div id="head"><h1>!bbs_title!</h1></div>
+<div id="main">
+
+<div class="ta-r">
+	<input type="button" class="color green button small" value="Back" onclick="window.open('!bbs_cgi!?bbs=1&amp;pg=!pg!','_self')">
+</div>
+
+<div class="res-btn">
+	<input type="button" value="返信投稿" onclick="add_form();">
+</div>
+
+<form action="!regist_cgi!" method="post" enctype="multipart/form-data">
+<input type="hidden" name="mode" value="regist">
+<input type="hidden" name="reno" value="!reno!">
+<input type="hidden" name="bbs" value="!bbs!">
+<div id="reg-area">
+<div id="reg-box" style="display:none;">
+<table id="reg-tbl">
+<tr>
+	<th>おなまえ</th>
+	<td><input type="text" name="name" class="reg-name" value="!name!" maxlength="15"></td>
+</tr><tr>
+	<th>Ｅメール</th>
+	<td><input type="text" name="email" class="reg-name" value="!email!"></td>
+</tr><tr>
+	<th>タイトル</th>
+	<td nowrap="nowrap">
+		<input type="text" name="sub" class="reg-url" value="!sub!">
+		<input type="submit" value="返信する">
+	</td>
+</tr><tr>
+	<th colspan="2">
+		コメント<br>
+    	<textarea class="reg-com" name="comment"></textarea>
+	</th>
+</tr><tr>
+	<th>参照URL</th>
+	<td><input type="text" class="reg-url" name="url" value="!url!"></td>
+</tr><tr>
+	<th>添付File</th>
+	<td><input type="file" name="upfile" class="reg-url"></td>
+</tr><tr>
+	<th>暗証キー</th>
+	<td class="small">
+		<input type="password" name="pwd" class="reg-num" maxlength="8">
+		(英数字で8文字以内)
+	</td>
+
+<!-- captcha -->
+</tr><tr>
+	<th>画像認証</th>
+	<td class="small">
+		<input type="text" name="captcha" size="8" style="ime-mode:inactive" maxlength="8">
+		（右画像の数字を入力） <img src="!captcha_cgi!?!str_crypt!" class="capt" alt="投稿キー">
+		<input type="hidden" name="str_crypt" value="!str_crypt!">
+	</td>
+<!-- /captcha -->
+
+</tr><tr>
+	<th>文字色</th>
+	<td>!color!</td>
+</tr>
+</table>
+</div>
+</div>
+</form>
+
+<!-- loop -->
+<div class="art">
+	<strong>!sub!</strong>
+	<p>!comment!</p>
+	<div class="art-info">
+		!icon:user.png! <b>!name!</b> !icon:time.png! !date! !url! <span class="num">No.!num!</span>
+	</div>
+	<!-- res -->
+</div>
+<!-- /loop -->
+
+<div class="ta-c">
+<form action="!regist_cgi!" method="post">
+<input type="hidden" name="bbs" value="1">
+処理 <select name="mode">
+<option value="log_edit">修正</option>
+<option value="log_dele">削除</option>
+</select>
+記事No <input type="text" name="no" size="4" style="ime-mode:inactive">
+暗証キー <input type="password" name="pwd" size="4" maxlength="8">
+<input type="submit" value="送信">
+</form>
+
+</div>
+</div>
+</body>
+</html>
