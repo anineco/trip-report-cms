@@ -13,12 +13,8 @@ import xml.etree.ElementTree as ET
 
 from exiftool import ExifToolHelper
 
-import config
+from config import GPX_DIR, IMG_DIR, WORK_DIR
 from const import namespaces
-
-WORKSPACE = os.path.expanduser(config.WORKSPACE)
-MATERIAL_GPX = os.path.expanduser(config.MATERIAL_GPX)
-MATERIAL_IMG = os.path.expanduser(config.MATERIAL_IMG)
 
 ICON_SUMMIT = '952015' # kashmir3d:icon
 
@@ -129,10 +125,10 @@ def read_section(files): # gpx files
     }
 
 # set source gpx files and file name of routemap
-for track in glob.glob(f"{MATERIAL_GPX}/{cid}/trk*.gpx"):
+for track in glob.glob(f"{GPX_DIR}/{cid}/trk*.gpx"):
     if match := re.search(r".*/trk(\d?)\.gpx", track):
         c = match.group(1)
-        files = glob.glob(f"{MATERIAL_GPX}/{cid}/???{c}.gpx") # rte, trk, wpt
+        files = glob.glob(f"{GPX_DIR}/{cid}/???{c}.gpx") # rte, trk, wpt
         section = read_section(files)
         section['gpx'] = files
         section['routemap'] = f"routemap{c}.geojson"
@@ -153,7 +149,7 @@ else:
 
 # set cover image to resource
 hash = set()
-covers = glob.glob(f"{MATERIAL_IMG}/{cid}/cover/*")
+covers = glob.glob(f"{IMG_DIR}/{cid}/cover/*")
 if len(covers) < 1:
     print(f"No cover image found: {cid}", file=sys.stderr)
     sys.exit(1)
@@ -169,7 +165,7 @@ hash.add('key')
 
 # load photo's metadata
 photos_unsorted = []
-for file in glob.glob(f"{MATERIAL_IMG}/{cid}/*[0-9][0-9][0-9][0-9].*"):
+for file in glob.glob(f"{IMG_DIR}/{cid}/*[0-9][0-9][0-9][0-9].*"):
     item = { 'file': file }
     base = os.path.basename(file)
     match = re.search(r'^.*(\d{4})\..*$', base)
@@ -224,13 +220,13 @@ for photo in photos:
             section['photo'].append(photo)
             break
 
-# prepare workspace
-folder = f"{WORKSPACE}/{cid}"
+# prepare WORK_DIR
+folder = f"{WORK_DIR}/{cid}"
 if not os.path.exists(folder):
     os.makedirs(folder)
 
 # write resource.json
-file = f"{WORKSPACE}/{cid}.json"
+file = f"{WORK_DIR}/{cid}.json"
 with open(file, 'w') as f:
     f.write(json.dumps(resource, ensure_ascii=False, indent=2))
 
