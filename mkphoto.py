@@ -9,20 +9,21 @@ from config import WORK_DIR
 
 # command line arguments
 if len(sys.argv) != 2:
-    print(f'Usage: {sys.argv[0]} <cid>', file=sys.stderr)
+    print(f"Usage: {sys.argv[0]} <cid>", file=sys.stderr)
     sys.exit(1)
 
-cid = sys.argv[1] # Content ID
+cid = sys.argv[1]  # Content ID
 
 # read json file
-with open(f'{WORK_DIR}/{cid}.json', 'r') as f:
+with open(f"{WORK_DIR}/{cid}.json", "r") as f:
     resource = json.load(f)
 
 # provide shell script to squoosh images
-cmd = [ 'bash', '-eu' ]
+cmd = ["bash", "-eu"]
 try:
     process = subprocess.Popen(cmd, shell=True, stdin=subprocess.PIPE, text=True)
-    process.stdin.write('''
+    process.stdin.write(
+        """
 TMOZ=$(mktemp -d moz.XXXXXX)
 trap 'rm -rf $TMOZ' EXIT
 function squoosh () {
@@ -48,29 +49,32 @@ function squoosh_crop () {
   npx sharp --quality 75 --mozjpeg --input $TMOZ/$b.jpeg --output $t.jpg -- resize $w $h
   rm -f $TMOZ/$b.jpeg
 }
-''')
+"""
+    )
 
-    d = f'{WORK_DIR}/{cid}'
-    s = resource['cover']['file']
-    t = resource['cover']['hash']
+    d = f"{WORK_DIR}/{cid}"
+    s = resource["cover"]["file"]
+    t = resource["cover"]["hash"]
 
-    process.stdin.write(f'''
+    process.stdin.write(
+        f"""
 mkdir -p {d}/2x
 squoosh {s} 120 90 {d}/S{t}
 squoosh {s} 240 180 {d}/2x/S{t}
 squoosh_crop {s} 320 180 {d}/W{t}
 squoosh_crop {s} 320 240 {d}/F{t}
 squoosh_crop {s} 240 240 {d}/Q{t}
-''')
-    
-    for s in resource['section']:
-        for p in s['photo']:
-            s = p['file']
-            t = p['hash']
-            w, h = (270, 180) if p['width'] > p['height'] else (180, 270)
-            process.stdin.write(f'squoosh {s} {w} {h} {d}/{t}\n')
-            process.stdin.write(f'squoosh {s} {2*w} {2*h} {d}/2x/{t}\n')
-                      
+"""
+    )
+
+    for s in resource["section"]:
+        for p in s["photo"]:
+            s = p["file"]
+            t = p["hash"]
+            w, h = (270, 180) if p["width"] > p["height"] else (180, 270)
+            process.stdin.write(f"squoosh {s} {w} {h} {d}/{t}\n")
+            process.stdin.write(f"squoosh {s} {2*w} {2*h} {d}/2x/{t}\n")
+
     process.stdin.close()
     process.wait()
 except OSError as e:

@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from datetime import datetime
 import csv
 import sqlite3
 import sys
+from datetime import datetime
 
 from jinja2 import Environment, FileSystemLoader
 
@@ -24,7 +24,7 @@ cursor = connection.cursor()
 
 sql = """
 SELECT cid, start, end, pub, title, link FROM metadata
-WHERE pub IS NOT NULL AND pub LIKE ? ORDER BY pub, start DESC
+WHERE pub IS NOT NULL AND pub LIKE ? ORDER BY pub DESC, start ASC
 """
 cursor.execute(sql, (f"{year}%",))
 for cid, start, end, pub, title, link in cursor.fetchall():

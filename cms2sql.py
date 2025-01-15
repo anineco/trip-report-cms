@@ -11,54 +11,68 @@ import mysql.connector
 
 from config import DATA_DIR, DIST_DIR, HOME
 
-ICON_SUMMIT = 'symbols/Summit.png'
+ICON_SUMMIT = "symbols/Summit.png"
 
 # open metadata database of trip reports
-connection1 = sqlite3.connect(f'{DATA_DIR}/metadata.sqlite3')
+connection1 = sqlite3.connect(f"{DATA_DIR}/metadata.sqlite3")
 cursor1 = connection1.cursor()
 
-# open geologiacl database of mountains for nearest point search
+# open the geologiacl database of mountains for nearest point search
+# NOTE: access to the database is limited to the repository owner
 connection2 = mysql.connector.connect(
-    option_files=os.path.expanduser(f'${HOME}/.my.cnf'),
-    database='anineco_tozan'
+    option_files=os.path.expanduser(f"${HOME}/.my.cnf"), database="anineco_tozan"
 )
 cursor2 = connection2.cursor()
 
-# read geojson file and find nearest summit from geological database
+
+# read geojson file and find nearest summit
 def read_geojson(file):
-    with open(file, 'r', encoding='utf-8') as f:
+    with open(file, "r", encoding="utf-8") as f:
         root = json.load(f)
 
-    for feature in root['features']:
+    for feature in root["features"]:
         # extract summit points
-        geometry = feature['geometry']
-        propertys = feature['properties']
-        if not (geometry['type'] == 'Point' and propertys['_iconUrl'] == ICON_SUMMIT):
+        geometry = feature["geometry"]
+        propertys = feature["properties"]
+        if not (geometry["type"] == "Point" and propertys["_iconUrl"] == ICON_SUMMIT):
             continue
-        lon, lat = geometry['coordinates']
-        name = propertys['name']
+        lon, lat = geometry["coordinates"]
+        name = propertys["name"]
         # find nearest point
-        cursor2.execute(f"SET @p=ST_GeomFromText('POINT({lon} {lat})',4326,'axis-order=long-lat')")
-        cursor2.execute("SELECT id,name,ST_Distance_Sphere(pt,@p) AS d FROM geom ORDER BY d LIMIT 1")
+        sql = f"""
+SET @p=ST_GeomFromText('POINT({lon} {lat})', 4326, 'axis-order=long-lat')
+"""
+        cursor2.execute(sql)
+        sql = """
+SELECT id, name, ST_Distance_Sphere(pt, @p) AS d FROM geom ORDER BY d LIMIT 1
+"""
+        cursor2.execute(sql)
         id, name, d = cursor2.fetchone()
-        if d < 40: # less than 40m
+        if d < 40:  # less than 40m
             d = round(d, 1)
-            print(f"INSERT INTO explored VALUES (@rec,NULL,{id}); -- {name},{d}m")
+            print(f"INSERT INTO explored VALUES (@rec, NULL, {id}); -- {name}, {d}m")
+
 
 # command line arguments
 if len(sys.argv) != 2:
-    print(f'Usage: {sys.argv[0]} <cid>', file=sys.stderr)
+    print(f"Usage: {sys.argv[0]} <cid>", file=sys.stderr)
     sys.exit(1)
-cid = sys.argv[1] # Content ID
+cid = sys.argv[1]  # Content ID
 
 # write SQL for register new article
-cursor1.execute("SELECT start,end,pub,title,summary,link,img1x FROM metadata WHERE cid=?", (cid,))
+sql = """
+SELECT start, end, pub, title, summary, link, img1x FROM metadata WHERE cid=?
+"""
+cursor1.execute(sql, (cid,))
 start, end, pub, title, summary, link, img1x = cursor1.fetchone()
-print(f"INSERT INTO record VALUES (NULL,'{start}','{end}','{pub}','{title}','{summary}','{link}','{img1x}');")
+sql = f"""
+INSERT INTO record VALUES (NULL, '{start}', '{end}', '{pub}', '{title}', '{summary}', '{link}', '{img1x}');
+"""
+print(sql)
 print("SET @rec=LAST_INSERT_ID();")
 
 # write SQL for register explored points
-for file in glob.glob(f'{DIST_DIR}/{cid}/routemap*.geojson'):
+for file in glob.glob(f"{DIST_DIR}/{cid}/routemap*.geojson"):
     read_geojson(file)
 
 connection1.close()
