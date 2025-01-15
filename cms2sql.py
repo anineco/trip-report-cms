@@ -39,26 +39,26 @@ def read_geojson(file):
         name = propertys['name']
         # find nearest point
         cursor2.execute(f"SET @p=ST_GeomFromText('POINT({lon} {lat})',4326,'axis-order=long-lat')")
-        cursor2.execute('SELECT id,name,ST_Distance_Sphere(pt,@p) AS d FROM geom ORDER BY d LIMIT 1')
+        cursor2.execute("SELECT id,name,ST_Distance_Sphere(pt,@p) AS d FROM geom ORDER BY d LIMIT 1")
         id, name, d = cursor2.fetchone()
         if d < 40: # less than 40m
             d = round(d, 1)
-            print(f'INSERT INTO explored VALUES (@rec,NULL,{id}); -- {name},{d}m')
+            print(f"INSERT INTO explored VALUES (@rec,NULL,{id}); -- {name},{d}m")
 
 # command line arguments
 if len(sys.argv) != 2:
-    print(f"Usage: {sys.argv[0]} <cid>", file=sys.stderr)
+    print(f'Usage: {sys.argv[0]} <cid>', file=sys.stderr)
     sys.exit(1)
 cid = sys.argv[1] # Content ID
 
 # write SQL for register new article
-cursor1.execute('SELECT start,end,pub,title,summary,link,img1x FROM metadata WHERE cid=?', (cid,))
+cursor1.execute("SELECT start,end,pub,title,summary,link,img1x FROM metadata WHERE cid=?", (cid,))
 start, end, pub, title, summary, link, img1x = cursor1.fetchone()
-print(f'INSERT INTO record VALUES (NULL,"{start}","{end}","{pub}","{title}","{summary}","{link}","{img1x}");')
-print('SET @rec=LAST_INSERT_ID();')
+print(f"INSERT INTO record VALUES (NULL,'{start}','{end}','{pub}','{title}','{summary}','{link}','{img1x}');")
+print("SET @rec=LAST_INSERT_ID();")
 
 # write SQL for register explored points
-for file in glob.glob(f"{DIST_DIR}/{cid}/routemap*.geojson"):
+for file in glob.glob(f'{DIST_DIR}/{cid}/routemap*.geojson'):
     read_geojson(file)
 
 connection1.close()

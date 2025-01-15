@@ -30,10 +30,10 @@ context = {
 connection = sqlite3.connect(f'{DATA_DIR}/metadata.sqlite3')
 cursor = connection.cursor()
 
-cursor.execute('''
+cursor.execute("""
 SELECT cid, start, end, pub, title, summary, link, img1x, img2x FROM metadata
 ORDER BY start DESC LIMIT 3
-''')
+""")
 for cid, start, end, pub, title, summary, link, img1x, img2x in cursor.fetchall():
     s = datetime.strptime(start, '%Y-%m-%d')
     e = datetime.strptime(end, '%Y-%m-%d')

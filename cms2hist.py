@@ -12,7 +12,7 @@ from config import DATA_DIR
 from utils import iso_period
 
 if len(sys.argv) != 2:
-    print(f"Usage: {sys.argv[0]} <year>", file=sys.stderr)
+    print(f'Usage: {sys.argv[0]} <year>', file=sys.stderr)
     sys.exit(1)
 year = sys.argv[1]
 
@@ -22,11 +22,11 @@ data = {} # NOTE: data = { pub => [content, ...] }
 connection = sqlite3.connect(f'{DATA_DIR}/metadata.sqlite3')
 cursor = connection.cursor()
 
-cursor.execute('''
+cursor.execute("""
 SELECT cid, start, end, pub, title, link FROM metadata
 WHERE pub IS NOT NULL AND pub LIKE ?
 ORDER BY pub DESC,start
-''', (f"{year}%",))
+""", (f'{year}%',))
 for cid, start, end, pub, title, link in cursor.fetchall():
     s = datetime.strptime(start, '%Y-%m-%d')
     e = datetime.strptime(end, '%Y-%m-%d')
@@ -49,7 +49,7 @@ context = {
 }
 
 for key, value in sorted(data.items(), reverse=True):
-    content = "<br>".join(value)
+    content = '<br>'.join(value)
     context['items'].append({
         'pub': key,
         'content': content.replace('<br>', '<br>\n')

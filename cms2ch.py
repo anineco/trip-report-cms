@@ -11,7 +11,7 @@ from config import DATA_DIR
 from utils import jp_period_short
 
 if len(sys.argv) != 2:
-    print(f"Usage: {sys.argv[0]} <year>", file=sys.stderr)
+    print(f'Usage: {sys.argv[0]} <year>', file=sys.stderr)
     sys.exit(1)
 year = sys.argv[1]
 
@@ -25,13 +25,13 @@ connection = sqlite3.connect(f'{DATA_DIR}/metadata.sqlite3')
 cursor = connection.cursor()
 
 lm_year = 2022 # NOTE: backward compatibility
-cursor.execute('''
+cursor.execute("""
 SELECT cid, start, end, pub, title, summary, link, img1x, img2x FROM metadata
 WHERE start LIKE ? ORDER BY start
-''', (f"{year}%",))
+""", (f'{year}%',))
 for cid, start, end, pub, title, summary, link, img1x, img2x in cursor.fetchall():
     if pub:
-        p = datetime.strptime(pub, "%Y-%m-%d")
+        p = datetime.strptime(pub, '%Y-%m-%d')
         if lm_year < p.year:
             lm_year = p.year
     s = datetime.strptime(start, '%Y-%m-%d')

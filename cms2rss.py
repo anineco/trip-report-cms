@@ -13,7 +13,7 @@ from utils import jp_period
 # command line arguments
 rss_version = sys.argv[1] if len(sys.argv) == 2 else '1.0'
 if not rss_version in ['1.0', '2.0']:
-    print(f"Usage: {sys.argv[0]} [1.0|2.0]", file=sys.stderr)
+    print(f'Usage: {sys.argv[0]} [1.0|2.0]', file=sys.stderr)
     sys.exit(1)
 
 # context
@@ -25,10 +25,10 @@ context = {
 connection = sqlite3.connect(f'{DATA_DIR}/metadata.sqlite3')
 cursor = connection.cursor()
 
-cursor.execute('''
+cursor.execute("""
 SELECT start, end, pub, title, summary, link, img1x, img2x FROM metadata
 ORDER BY start DESC LIMIT 15
-''')
+""")
 for start, end, pub, title, summary, link, img1x, img2x in cursor.fetchall():
     s = datetime.strptime(start, '%Y-%m-%d')
     e = datetime.strptime(end, '%Y-%m-%d')

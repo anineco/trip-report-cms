@@ -63,15 +63,15 @@ def center(min_lon, min_lat, max_lon, max_lat): # bbox
 
 # generate routemap URL
 def gen_routemap(routemap):
-    file = f"{WORK_DIR}/{cid}/{routemap}"
+    file = f'{WORK_DIR}/{cid}/{routemap}'
     with open(file, 'r', encoding='utf-8') as f:
         data = json.load(f)
     if not 'bbox' in data:
-        print(f"Error: {file} does not have bbox.", file=sys.stderr)
+        print(f'Error: {file} does not have bbox.', file=sys.stderr)
         sys.exit(1)
     bbox = data['bbox']
     lat, lon, zoom = center(*bbox)
-    return f"routemap.html?lat={lat}&amp;lon={lon}&amp;zoom={zoom}&amp;url={cid}/{routemap}"
+    return f'routemap.html?lat={lat}&amp;lon={lon}&amp;zoom={zoom}&amp;url={cid}/{routemap}'
 
 # generate sequence of photo pairs
 def gen_photo(photos):
@@ -102,13 +102,13 @@ def gen_section(sections):
 
 # command line arguments
 if len(sys.argv) != 2:
-    print(f"Usage: {sys.argv[0]} <cid>", file=sys.stderr)
+    print(f'Usage: {sys.argv[0]} <cid>', file=sys.stderr)
     sys.exit(1)
 cid = sys.argv[1] # Content ID
 description = '⚠️ This article is a draft'
 
 # load resource json
-with open(f"{WORK_DIR}/{cid}.json", 'r', encoding='utf-8') as f:
+with open(f'{WORK_DIR}/{cid}.json', 'r', encoding='utf-8') as f:
     resource = json.load(f)
 
 # set template context

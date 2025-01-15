@@ -39,7 +39,7 @@ cursor = connection.cursor()
 
 for year in range(int(lm_year), 1997, -1): # CAUTION: the first year is hard-coded
     data = [] # NOTE: data = [ {period, title, link}, ... ]
-    cursor.execute('SELECT start, end, title, link FROM metadata WHERE start LIKE ? ORDER BY start', (f"{year}%",))
+    cursor.execute("SELECT start, end, title, link FROM metadata WHERE start LIKE ? ORDER BY start", (f'{year}%',))
     for start, end, title, link in cursor.fetchall():
         s = datetime.strptime(start, '%Y-%m-%d')
         e = datetime.strptime(end, '%Y-%m-%d')

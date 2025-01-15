@@ -20,7 +20,7 @@ ICON_SUMMIT = '952015' # kashmir3d:icon
 
 # command line arguments
 if len(sys.argv) != 3:
-    print(f"Usage: {sys.argv[0]} <cid> <title>", file=sys.stderr)
+    print(f'Usage: {sys.argv[0]} <cid> <title>', file=sys.stderr)
     sys.exit(1)
 
 cid = sys.argv[1]   # Content ID
@@ -34,14 +34,14 @@ def read_section(files): # gpx files
     trkpts_unsorted = []
     for file in files:
         root = ET.parse(file).getroot()
-        for wpt in root.findall(".//wpt", namespaces):
+        for wpt in root.findall('.//wpt', namespaces):
             item = {
                 'lat': wpt.get('lat'),
                 'lon': wpt.get('lon'),
-                'icon': wpt.find(".//kashmir3d:icon", namespaces).text,
-                'name': wpt.find("name", namespaces).text
+                'icon': wpt.find('.//kashmir3d:icon', namespaces).text,
+                'name': wpt.find('name', namespaces).text
             }
-            if item['icon'] == ICON_SUMMIT and (cmt := wpt.find("cmt", namespaces)) is not None:
+            if item['icon'] == ICON_SUMMIT and (cmt := wpt.find('cmt', namespaces)) is not None:
                 for row in cmt.text.split(','):
                     key, value = row.split('=')
                     if key == '標高': # 'elevation'
@@ -49,16 +49,16 @@ def read_section(files): # gpx files
                         break
             wpts.append(item)
 
-        for trk in root.findall(".//trk", namespaces):
-            for trkseg in trk.findall("trkseg", namespaces):
-                for trkpt in trkseg.findall("trkpt", namespaces):
-                    time = trkpt.find("time", namespaces).text
-                    t = datetime.strptime(time, "%Y-%m-%dT%H:%M:%SZ") # UTC aka Zulu time
+        for trk in root.findall('.//trk', namespaces):
+            for trkseg in trk.findall('trkseg', namespaces):
+                for trkpt in trkseg.findall('trkpt', namespaces):
+                    time = trkpt.find('time', namespaces).text
+                    t = datetime.strptime(time, '%Y-%m-%dT%H:%M:%SZ') # UTC aka Zulu time
                     t += timedelta(hours=9) # translate to JST
                     item = {
                         'lat': trkpt.get('lat'),
                         'lon': trkpt.get('lon'),
-                        'time': t.strftime("%Y-%m-%dT%H:%M:%S")
+                        'time': t.strftime('%Y-%m-%dT%H:%M:%S')
                     }
                     trkpts_unsorted.append(item)
 
@@ -125,13 +125,13 @@ def read_section(files): # gpx files
     }
 
 # set source gpx files and file name of routemap
-for track in glob.glob(f"{GPX_DIR}/{cid}/trk*.gpx"):
-    if match := re.search(r".*/trk(\d?)\.gpx", track):
+for track in glob.glob(f'{GPX_DIR}/{cid}/trk*.gpx'):
+    if match := re.search(r'.*/trk(\d?)\.gpx', track):
         c = match.group(1)
-        files = glob.glob(f"{GPX_DIR}/{cid}/???{c}.gpx") # rte, trk, wpt
+        files = glob.glob(f'{GPX_DIR}/{cid}/???{c}.gpx') # rte, trk, wpt
         section = read_section(files)
         section['gpx'] = files
-        section['routemap'] = f"routemap{c}.geojson"
+        section['routemap'] = f'routemap{c}.geojson'
         resource['section'].append(section)
 
 # set start and end date to resource
@@ -149,15 +149,15 @@ else:
 
 # set cover image to resource
 hash = set()
-covers = glob.glob(f"{IMG_DIR}/{cid}/cover/*")
+covers = glob.glob(f'{IMG_DIR}/{cid}/cover/*')
 if len(covers) < 1:
-    print(f"No cover image found: {cid}", file=sys.stderr)
+    print(f'No cover image found: {cid}', file=sys.stderr)
     sys.exit(1)
 file = covers[0]
 base = os.path.basename(file)
 match = re.search(r'^.*(\d{4})\..*$', base)
 if not match:
-    print(f"Invalid file name: {base}", file=sys.stderr)
+    print(f'Invalid file name: {base}', file=sys.stderr)
     sys.exit(1)
 key = match.group(1)
 resource['cover'] = { 'file': file, 'hash': key }
@@ -165,12 +165,12 @@ hash.add('key')
 
 # load photo's metadata
 photos_unsorted = []
-for file in glob.glob(f"{IMG_DIR}/{cid}/*[0-9][0-9][0-9][0-9].*"):
+for file in glob.glob(f'{IMG_DIR}/{cid}/*[0-9][0-9][0-9][0-9].*'):
     item = { 'file': file }
     base = os.path.basename(file)
     match = re.search(r'^.*(\d{4})\..*$', base)
     if not match:
-        print(f"Invalid file name: {base}", file=sys.stderr)
+        print(f'Invalid file name: {base}', file=sys.stderr)
         sys.exit(1)
     key = match.group(1)
     if key in hash and key != resource['cover']['hash']:
@@ -180,7 +180,7 @@ for file in glob.glob(f"{IMG_DIR}/{cid}/*[0-9][0-9][0-9][0-9].*"):
                 item['hash'] = keyc
                 break
         if 'hash' not in item:
-            print(f"Too many photos: {cid}", file=sys.stderr)
+            print(f'Too many photos: {cid}', file=sys.stderr)
             sys.exit(1)
     else:
         hash.add(key)
@@ -190,15 +190,15 @@ for file in glob.glob(f"{IMG_DIR}/{cid}/*[0-9][0-9][0-9][0-9].*"):
         try:
             info = et.get_metadata(file)[0]
             date_time_original = info['EXIF:DateTimeOriginal']
-            t = datetime.strptime(date_time_original, "%Y:%m:%d %H:%M:%S")
-            item['time'] = t.strftime("%Y-%m-%dT%H:%M:%S")
+            t = datetime.strptime(date_time_original, '%Y:%m:%d %H:%M:%S')
+            item['time'] = t.strftime('%Y-%m-%dT%H:%M:%S')
             item['width'] = info['File:ImageWidth']
             item['height'] = info['File:ImageHeight']
             item['caption'] = info['XMP:Title']
         except KeyError:
-            print(f"KeyError: {file}", file=sys.stderr)
+            print(f'KeyError: {file}', file=sys.stderr)
         except ValueError:
-            print(f"ValueError: {file}", file=sys.stderr)
+            print(f'ValueError: {file}', file=sys.stderr)
 
     photos_unsorted.append(item)
 
@@ -213,20 +213,20 @@ for photo in photos:
             section['photo'].append(photo)
             break
         # calculate midtime between current and next section
-        t1 = datetime.strptime(section['timespan'][1], "%Y-%m-%dT%H:%M:%S")
-        t2 = datetime.strptime(resource['section'][i + 1]['timespan'][0], "%Y-%m-%dT%H:%M:%S")
+        t1 = datetime.strptime(section['timespan'][1], '%Y-%m-%dT%H:%M:%S')
+        t2 = datetime.strptime(resource['section'][i + 1]['timespan'][0], '%Y-%m-%dT%H:%M:%S')
         tc = t1 + (t2 - t1) / 2
-        if t < tc.strftime("%Y-%m-%dT%H:%M:%S"):
+        if t < tc.strftime('%Y-%m-%dT%H:%M:%S'):
             section['photo'].append(photo)
             break
 
 # prepare WORK_DIR
-folder = f"{WORK_DIR}/{cid}"
+folder = f'{WORK_DIR}/{cid}'
 if not os.path.exists(folder):
     os.makedirs(folder)
 
 # write resource.json
-file = f"{WORK_DIR}/{cid}.json"
+file = f'{WORK_DIR}/{cid}.json'
 with open(file, 'w') as f:
     f.write(json.dumps(resource, ensure_ascii=False, indent=2))
 
