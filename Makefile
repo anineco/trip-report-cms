@@ -46,7 +46,7 @@ ${DIST_DIR}/tozan2.rdf: ${DATA_DIR}/metadata.sqlite3 cms2rss.py template/rss20.x
 	./cms2rss.py 2.0 > $@
 
 ${DIST_DIR}/css/%.css: src/%.css
-	cleancss -o $@ $^
+	npx cleancss -o $@ $^
 
 ${DIST_DIR}/js/%.js: src/%.js .env.local
 	npm run build
