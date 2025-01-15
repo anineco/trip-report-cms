@@ -42,7 +42,7 @@ if len(sys.argv) > 1 and sys.argv[1] == '-d':
             cid = os.path.splitext(os.path.basename(arg))[0]
         else:
             cid = arg
-        cursor.execute('DELETE FROM metadata WHERE cid = ?', (cid,))
+        cursor.execute("DELETE FROM metadata WHERE cid = ?", (cid,))
 
     connection.commit()
     connection.close()
@@ -55,9 +55,9 @@ for arg in sys.argv[1:]:
         cid = os.path.splitext(os.path.basename(arg))[0]
     else:
         cid = arg
-        filename = f"${DIST_DIR}/{cid}.html"
-    link = f"{cid}.html"
-    pub = summary = img1x = img2x = ""
+        filename = f'${DIST_DIR}/{cid}.html'
+    link = f'{cid}.html'
+    pub = summary = img1x = img2x = ''
     f = open(filename, 'r', encoding='utf-8')
     for line in f:
         if match := re.search(r'"temporalCoverage":"(.*?)"', line):
@@ -71,8 +71,8 @@ for arg in sys.argv[1:]:
                 elif len(e) == 2:
                     m, d = e
                 else:
-                    d = e
-                end = f"{y}-{m}-{d}"
+                    d = e[0]
+                end = f'{y}-{m}-{d}'
             else:
                 end = start
         elif match := re.search(r'^<title>(.*?)</title>', line):
@@ -81,16 +81,16 @@ for arg in sys.argv[1:]:
             summary = match.group(1)
         elif match := re.search(r'^<meta property="og:image" content="https://anineco.org/(.*?)/2x/(.*?).jpg">', line):
             folder, cover = match.groups()
-            img1x = f"{folder}/S{cover}.jpg"
-            img2x = f"{folder}/2x/S{cover}.jpg"
+            img1x = f'{folder}/S{cover}.jpg'
+            img2x = f'{folder}/2x/S{cover}.jpg'
         elif match := re.search(r'"datePublished":"(.*?)"', line):
             pub = match.group(1)
 
     f.close()
-    cursor.execute('''
+    cursor.execute("""
     REPLACE INTO metadata (cid, start, end, pub, title, summary, link, img1x, img2x)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-    ''', (cid, start, end, pub, title, summary, link, img1x, img2x))
+    """, (cid, start, end, pub, title, summary, link, img1x, img2x))
     connection.commit()
 
 connection.close()
