@@ -8,7 +8,7 @@ from datetime import datetime, timedelta
 
 from jinja2 import Environment, FileSystemLoader
 
-from config import WORK_DIR
+from config import DIST_DIR, WORK_DIR
 from utils import iso_period, jp_datespan
 
 
@@ -119,10 +119,16 @@ def gen_section(sections):
 
 
 # command line arguments
-if len(sys.argv) != 2:
-    print(f"Usage: {sys.argv[0]} <cid>", file=sys.stderr)
+out_dir = DIST_DIR
+if len(sys.argv) == 2:
+    cid = sys.argv[1]  # Content ID
+elif len(sys.argv) == 3 and sys.argv[1] == "-w":
+    out_dir = WORK_DIR
+    cid = sys.argv[2]
+else:
+    print(f"Usage: {sys.argv[0]} [-w] <cid>", file=sys.stderr)
     sys.exit(1)
-cid = sys.argv[1]  # Content ID
+
 description = "⚠️ This article is a draft"
 
 # load resource json
@@ -151,7 +157,7 @@ context = {
 # Jinja2 template rendering
 env = Environment(loader=FileSystemLoader("template"), trim_blocks=True)
 template = env.get_template("draft.html")
-with open(f"{WORK_DIR}/{cid}.html", "w", encoding="utf-8") as f:
+with open(f"{out_dir}/{cid}.html", "w", encoding="utf-8") as f:
     f.write(template.render(context))
     f.write("\n")
 # __END__

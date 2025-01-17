@@ -8,13 +8,18 @@ import sys
 import lxml.etree as ET
 
 import togeojson
-from config import WORK_DIR
+from config import DIST_DIR, WORK_DIR
 
-if len(sys.argv) != 2:
-    print(f"Usage: {sys.argv[0]} <cid>", file=sys.stderr)
+# command line arguments
+out_dir = DIST_DIR
+if len(sys.argv) == 2:
+    cid = sys.argv[1]  # Content ID
+elif len(sys.argv) == 3 and sys.argv[1] == "-w":
+    out_dir = WORK_DIR
+    cid = sys.argv[2]
+else:
+    print(f"Usage: {sys.argv[0]} [-w] <cid>", file=sys.stderr)
     sys.exit(1)
-
-cid = sys.argv[1]  # Content ID
 
 # read json file
 with open(f"{WORK_DIR}/{cid}.json", "r") as f:
@@ -45,7 +50,7 @@ for s in resource["section"]:
     root = ET.fromstring(xml)
 
     geojson = togeojson.togeojson(root, line_size, line_style, opacity)
-    with open(f"{WORK_DIR}/{cid}/{routemap}", "w", encoding="utf-8") as f:
+    with open(f"{out_dir}/{cid}/{routemap}", "w", encoding="utf-8") as f:
         f.write(json.dumps(geojson, ensure_ascii=False, separators=(",", ":")))
         f.write("\n")
 

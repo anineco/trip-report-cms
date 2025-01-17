@@ -5,14 +5,18 @@ import json
 import subprocess
 import sys
 
-from config import WORK_DIR
+from config import DIST_DIR, WORK_DIR
 
 # command line arguments
-if len(sys.argv) != 2:
-    print(f"Usage: {sys.argv[0]} <cid>", file=sys.stderr)
+out_dir = DIST_DIR
+if len(sys.argv) == 2:
+    cid = sys.argv[1]  # Content ID
+elif len(sys.argv) == 3 and sys.argv[1] == "-w":
+    out_dir = WORK_DIR
+    cid = sys.argv[2]
+else:
+    print(f"Usage: {sys.argv[0]} [-w] <cid>", file=sys.stderr)
     sys.exit(1)
-
-cid = sys.argv[1]  # Content ID
 
 # read json file
 with open(f"{WORK_DIR}/{cid}.json", "r") as f:
@@ -52,7 +56,7 @@ function squoosh_crop () {
 """
     )
 
-    d = f"{WORK_DIR}/{cid}"
+    d = f"{out_dir}/{cid}"
     s = resource["cover"]["file"]
     t = resource["cover"]["hash"]
 
@@ -78,6 +82,6 @@ squoosh_crop {s} 240 240 {d}/Q{t}
     process.stdin.close()
     process.wait()
 except OSError as e:
-    print(f"Can't execute {cmd}: {e}", file=sys.stderr)
+    print(f"Can't execute {cmd[0]}: {e}", file=sys.stderr)
 
 # __END__
