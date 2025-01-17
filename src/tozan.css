@@ -1,213 +1,264 @@
 @charset "UTF-8";
 html {
-  height: 100%;
-  overflow: hidden;
-}
-body {
-  margin: 0;
-  height: 100%;
-  font-family: 'Helvetica Neue', 'Arial', 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', 'Meiryo', sans-serif;
-  color: black;
-  background-color: rgb(255,243,231);
-  line-height: 1.5;
-}
-#container {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-main {
-  flex: 1;
-  overflow-y: auto;
-  /* background-image: url(../image/sakura_05-min.png); */
-  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAABQAQMAAAC032DuAAAABlBMVEX/8+f/48fLVILeAAAAF0lEQVQoz2NgGAWDHPyHA2TmKBiSkQUA1Jgn2RzltyYAAAAASUVORK5CYII=);
-  background-attachment: local;
-}
-footer {
-  margin-bottom: 1em;
-}
-article, footer {
-  width: 650px; /* IE6でA4に印刷する際に最適な幅 */
-  margin-left: calc(50vw - 325px);
-}
-h1 {
-  padding: 5px;
-  background-color: #cff;
-  font-size: larger;
-  border: 1px solid #9ff;
-}
-h2 {
-  margin: 0;
-  padding: 0;
-  font-size: medium;
-}
-.section {
-  background-color: #ffc;
-  padding: 5px;
-}
-hr {
-  height: 1px;
-  clear: both;
-}
-small {
-  float: right;
-  font-style: italic;
-}
-a img {
-  border-style: none;
-}
-blockquote {
-  background-color: white;
-  margin-left: 2em;
-  margin-right: 2em;
-}
-em {
-  color: red;
-  font-weight: bold;
-  font-style: normal;
-}
-ins {
-  color: gray;
-  font-style: normal;
-  text-decoration: none;
-}
-.illust {
-  float: right;
-  margin: 1em;
-}
-.photo {
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-.photo figure {
-  display: inline-block;
-  margin: 0 0 5px 0;
-  padding: 0;
-}
-figcaption {
-  text-align: center;
-  font-size: smaller;
-}
-.photo img {
-  margin: 0 11px 5px 11px;
-  border: 1px outset silver;
-  padding: 2px;
-  background-color: white;
-}
-.photo img[height="240"] {
-  margin: 0 41px 5px 41px; /* 41=11+(240-180)/2 */
-}
-.photo img[height="270"] {
-  margin: 0 56px 5px 56px; /* 56=11+(270-180)/2 */
-}
-a {
-  font-weight: normal;
-}
-p a[href^="http:"]:after {
-  margin-left: 1px;
-  margin-right: 1px;
-  /* content: url(../image/external-link-red02-Shapes4FREE.gif); */
-  content: url(data:image/gif;base64,R0lGODlhCgAKAPAAAMoIAAAAACH5BAEAAAEALAAAAAAKAAoAAAIXTICJBuaX4JputnYyxfc+1inRx4lLUAAAOw==);
-}
-p a[href^="https:"]:after {
-  margin-left: 1px;
-  margin-right: 1px;
-  /* content: url(../image/external-link-green02-Shapes4FREE.gif); */
-  content: url(data:image/gif;base64,R0lGODlhCgAKAPAAAEuxRgAAACH5BAEAAAEALAAAAAAKAAoAAAIXTICJBuaX4JputnYyxfc+1inRx4lLUAAAOw==);
-}
-p a[href^="https://dl.ndl.go.jp/pid/"]:after {
-  margin-left: 1px;
-  margin-right: 1px;
-  content: "📚";
-  text-decoration: none;
-  display: inline-block;
-}
-a:link {
-  color: blue;
-}
-a:visited {
-  color: purple;
-}
-a:hover {
-  color: red;
-}
-nav {
-  float: left;
-  color: gray;
-}
-.routemap {
-  font-size: smaller;
-  margin-top: 0.5em;
-}
-nav a, nav select, .routemap a {
-  background-color: #fc9;
-  text-decoration: none;
-}
-nav a, .routemap a {
-  border-width: 1px;
-  border-style: solid;
-  border-color: #fcc #f96 #f96 #fcc;
-  border-radius: .4em;
-}
-nav form, nav div {
-  display: inline;
-}
-.mod {
-  text-decoration: underline;
-}
-.youtube {
-  text-align: center;
-}
-.youtube object {
-  width: 560px;
-  height: 315px;
-}
-span[title^="http"] { /* broken link */
-  text-decoration: underline dotted blue;
+    height: 100%;
+    overflow: hidden;
 }
 
-@media screen and (max-width: 649px) {
-  body {
-    min-width: 0;
-  }
-  #container {
-    width: auto;
-  }
-  article, footer {
-    width: auto;
-    margin-left: 0;
-    padding: 0 5px;
-  }
-  h1 {
-    margin-top: 0;
-  }
-  .youtube {
-    position: relative;
-    width: 100%;
-    padding-top: 56.25%;
-  }
-  .youtube object {
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 100% !important;
-    height: 100% !important;
-  }
-  .panorama img {
-    max-width: 100%;
-    height: auto;
+body {
+    margin: 0;
+    height: 100%;
+    line-height: 1.5;
+    font-family: 'Helvetica Neue', 'Arial', 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', 'Meiryo', sans-serif;
+    background-color: rgb(255,243,231); /* NOTE: background-color of image/sakura_05-min.png */
+    color: black;
+}
+
+#container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+    overflow-y: auto;
+    /* background-image: url(image/sakura_05-min.png); */
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFAAAABQAQMAAAC032DuAAAABlBMVEX/8+f/48fLVILeAAAAF0lEQVQoz2NgGAWDHPyHA2TmKBiSkQUA1Jgn2RzltyYAAAAASUVORK5CYII=);
+    background-attachment: local;
+}
+
+article,
+footer {
+    width: 650px; /* NOTE: IE6でA4に印刷する際に最適な幅 */
+    margin-left: calc(50vw - 325px);
+}
+
+footer {
+    margin-bottom: 1em;
+}
+
+h1 {
+    padding: 5px;
+    background-color: #cff;
+    font-size: larger;
+    border: 1px solid #9ff;
+}
+
+h2 {
+    margin: 0;
     padding: 0;
-    border-width: 0;
-  }
+    font-size: medium;
+}
+
+.section {
+    background-color: #ffc;
+    padding: 5px;
+}
+  
+.photo {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.photo figure {
+    display: inline-block;
+    margin: 0 0 5px 0;
+    padding: 0;
+}
+
+figcaption {
+    text-align: center;
+    font-size: smaller;
+}
+
+.photo img {
+    margin: 0 11px 5px 11px;
+    border: 1px outset silver;
+    padding: 2px;
+    background-color: white;
+}
+
+.photo img[height="240"] {
+    margin: 0 41px 5px 41px; /* 41=11+(240-180)/2 */
+}
+
+.photo img[height="270"] {
+    margin: 0 56px 5px 56px; /* 56=11+(270-180)/2 */
+}
+  
+hr {
+    height: 1px;
+    clear: both;
+}
+
+nav {
+    float: left;
+    color: gray;
+}
+  
+small {
+    float: right;
+    font-style: italic;
+}
+
+a img {
+    border-style: none;
+}
+
+blockquote {
+    background-color: white;
+    margin-left: 2em;
+    margin-right: 2em;
+}
+
+em {
+    color: red;
+    font-weight: bold;
+    font-style: normal;
+}
+
+ins {
+    color: gray;
+    font-style: normal;
+    text-decoration: none;
+ }
+
+.illust {
+    float: right;
+    margin: 1em;
+}
+
+a {
+    font-weight: normal;
+}
+
+p a[href^="http:"]:after {
+    margin-left: 1px;
+    margin-right: 1px;
+    /* content: url(../image/external-link-red02-Shapes4FREE.gif); */
+    content: url(data:image/gif;base64,R0lGODlhCgAKAPAAAMoIAAAAACH5BAEAAAEALAAAAAAKAAoAAAIXTICJBuaX4JputnYyxfc+1inRx4lLUAAAOw==);
+ }
+
+p a[href^="https:"]:after {
+    margin-left: 1px;
+    margin-right: 1px;
+    /* content: url(../image/external-link-green02-Shapes4FREE.gif); */
+    content: url(data:image/gif;base64,R0lGODlhCgAKAPAAAEuxRgAAACH5BAEAAAEALAAAAAAKAAoAAAIXTICJBuaX4JputnYyxfc+1inRx4lLUAAAOw==)
+}
+
+p a[href^="https://dl.ndl.go.jp/pid/"]:after {
+    margin-left: 1px;
+    margin-right: 1px;
+    content: "📚";
+    text-decoration: none;
+    display: inline-block;
+}
+
+a:link {
+    color: blue;
+}
+
+a:visited {
+    color: purple;
+}
+
+a:hover {
+    color: red;
+}
+
+.routemap {
+    font-size: smaller;
+    margin-top: 0.5em;
+}
+
+nav a,
+nav select,
+.routemap a {
+    background-color: #fc9;
+    text-decoration: none;
+}
+
+nav a,
+.routemap a {
+    border-width: 1px;
+    border-style: solid;
+    border-color: #fcc #f96 #f96 #fcc;
+    border-radius: .4em;
+}
+
+nav form,
+nav div {
+    display: inline;
+}
+
+.mod { /* annotation to be modified */
+    text-decoration: underline;
+}
+
+.youtube {
+    text-align: center;
+}
+
+.youtube object {
+    width: 560px;
+    height: 315px;
+}
+
+span[title^="http"] { /* broken link */
+    text-decoration: underline dotted blue;
+}
+  
+@media screen and (max-width: 649px) {
+    body {
+        min-width: 0;
+    }
+
+    #container {
+        width: auto;
+    }
+
+    article,
+    footer {
+        width: auto;
+        margin-left: 0;
+        padding: 0 5px;
+    }
+
+    h1 {
+        margin-top: 0;
+    }
+
+    .youtube {
+        position: relative;
+        width: 100%;
+        padding-top: 56.25%;
+    }
+
+    .youtube object {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 100% !important;
+        height: 100% !important;
+    }
+
+    .panorama img {
+        max-width: 100%;
+        height: auto;
+        padding: 0;
+        border-width: 0;
+    }
 }
 
 @media screen and (max-width: 539px) {
-  small {
-    display: none;
-  }
-  blockquote {
-    margin-left: 1em;
-  }
+    small {
+        display: none;
+    }
+
+    blockquote {
+        margin-left: 1em;
+    }
 }
-/* end of tozan.css */
+
+/* end of base.css */
