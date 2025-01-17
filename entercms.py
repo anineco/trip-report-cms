@@ -49,14 +49,14 @@ if len(sys.argv) > 1 and sys.argv[1] == "-d":
     connection.close()
     sys.exit(0)
 
-# insert reports
+# regist articles into metadata database
 for arg in sys.argv[1:]:
     if arg.endswith(".html"):
         filename = arg
         cid = os.path.splitext(os.path.basename(arg))[0]
     else:
         cid = arg
-        filename = f"${DIST_DIR}/{cid}.html"
+        filename = f"{DIST_DIR}/{cid}.html"
     link = f"{cid}.html"
     pub = summary = img1x = img2x = ""
     f = open(filename, "r", encoding="utf-8")
@@ -84,7 +84,7 @@ for arg in sys.argv[1:]:
             r'^<meta property="og:image" content="https://anineco.org/(.*?)/2x/(.*?).jpg">',
             line,
         ):
-            folder, cover = match.groups()
+            folder, cover = match.groups()  # NOTE: folder may not match cid
             img1x = f"{folder}/S{cover}.jpg"
             img2x = f"{folder}/2x/S{cover}.jpg"
         elif match := re.search(r'"datePublished":"(.*?)"', line):
