@@ -3,7 +3,6 @@
 
 import glob
 import json
-import os.path
 import sqlite3
 import sys
 
@@ -20,7 +19,7 @@ cursor1 = connection1.cursor()
 # open the geologiacl database of mountains for nearest point search
 # NOTE: access to the database is limited to the repository owner
 connection2 = mysql.connector.connect(
-    option_files=os.path.expanduser(f"${HOME}/.my.cnf"), database="anineco_tozan"
+    option_files=f"{HOME}/.my.cnf", database="anineco_tozan"
 )
 cursor2 = connection2.cursor()
 
