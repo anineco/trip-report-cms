@@ -4,7 +4,7 @@
 import glob
 import json
 import math
-import os
+import os.path
 import re
 import string
 import sys
@@ -27,6 +27,22 @@ cid = sys.argv[1]  # Content ID
 title = sys.argv[2]  # Title
 
 resource = {"cid": cid, "title": title, "section": []}
+
+
+# extract sequetial number (4 digits) from photo file name
+def extract_number(file):
+    base = os.path.basename(file)
+    patterns = [
+        r"^.{4}(\d{4})\.",  # fixed 4 characters + 4 digits
+        r"(\d{4})\d{5}\.",  # %y%m%d%H%M%S + 3 digits
+        r"\d{2}(\d{4})\."  # arbitrary string + 6 digits
+    ]
+    for pattern in patterns:
+        if match := re.search(pattern, base):
+            return match.group(1)
+
+    print(f"Photo filename with unknown pattern: {file}", file=sys.stderr)
+    sys.exit(1)
 
 
 # generate a section containing photos sectioning by the time of waypoints
@@ -113,7 +129,7 @@ def read_section(files):  # gpx files
             end = trkpt["time"]
             q = wpts[n1]
             item = {"name": q["name"], "timespan": [start, end]}
-            if q["icon"] == ICON_SUMMIT:
+            if q["icon"] == ICON_SUMMIT and "ele" in q:
                 item["ele"] = q["ele"]
                 summits.append(q["name"])
             timeline.append(item)
@@ -158,25 +174,16 @@ if len(covers) < 1:
     print(f"No cover image found: {cid}", file=sys.stderr)
     sys.exit(1)
 file = covers[0]
-base = os.path.basename(file)
-match = re.search(r"^.*(\d{4})\..*$", base)
-if not match:
-    print(f"Invalid file name: {base}", file=sys.stderr)
-    sys.exit(1)
-key = match.group(1)
+key = extract_number(file) # extract sequential part of cover file name
 resource["cover"] = {"file": file, "hash": key}
-hash.add("key")
+hash.add(key)
 
 # load photo's metadata
 photos_unsorted = []
+# NOTE: photo file name should be "arbitrary string + at least 4 digits + extension"
 for file in glob.glob(f"{IMG_DIR}/{cid}/*[0-9][0-9][0-9][0-9].*"):
     item = {"file": file}
-    base = os.path.basename(file)
-    match = re.search(r"^.*(\d{4})\..*$", base)
-    if not match:
-        print(f"Invalid file name: {base}", file=sys.stderr)
-        sys.exit(1)
-    key = match.group(1)
+    key = extract_number(file) # extract sequential part of photo file name
     if key in hash and key != resource["cover"]["hash"]:
         for c in string.ascii_lowercase:
             if (keyc := key + c) not in hash:
