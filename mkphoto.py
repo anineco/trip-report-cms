@@ -75,6 +75,7 @@ squoosh_crop {s} 240 240 {d}/Q{t}
         for p in s["photo"]:
             s = p["file"]
             t = p["hash"]
+            # NOTE: image size is fixed to 270x180 or 180x270
             w, h = (270, 180) if p["width"] > p["height"] else (180, 270)
             process.stdin.write(f"squoosh {s} {w} {h} {d}/{t}\n")
             process.stdin.write(f"squoosh {s} {2*w} {2*h} {d}/2x/{t}\n")
