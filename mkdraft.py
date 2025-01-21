@@ -3,6 +3,7 @@
 
 import json
 import math
+import os.path
 import sys
 from datetime import datetime, timedelta
 
@@ -67,8 +68,8 @@ def center(min_lon, min_lat, max_lon, max_lat):  # bbox
 
 
 # generate routemap URL
-def gen_routemap(routemap):
-    file = f"{WORK_DIR}/{cid}/{routemap}"
+def gen_routemap(routemap, out_dir):
+    file = f"{out_dir}/{cid}/{routemap}"
     with open(file, "r", encoding="utf-8") as f:
         data = json.load(f)
     if not "bbox" in data:
@@ -85,6 +86,7 @@ def gen_photo(photos):
     for i in range(0, len(photos), 2):
         p0 = photos[i]
         p1 = photos[i + 1]
+        # NOTE: image size is fixed to 270x180 or 180x270
         w0, h0 = (270, 180) if p0["width"] > p0["height"] else (180, 270)
         w1, h1 = (270, 180) if p1["width"] > p1["height"] else (180, 270)
         ret.append(
@@ -103,7 +105,7 @@ def gen_photo(photos):
 
 
 # generate sequence of sections
-def gen_section(sections):
+def gen_section(sections, out_dir):
     ret = []
     for s in sections:
         ret.append(
@@ -111,7 +113,7 @@ def gen_section(sections):
                 "title": s["title"],
                 "date": s["date"],  # %Y-%m-%d
                 "timeline": gen_timeline(s["timeline"]),
-                "routemap": gen_routemap(s["routemap"]),
+                "routemap": gen_routemap(s["routemap"], out_dir),
                 "photo": gen_photo(s["photo"]),
             }
         )
@@ -129,7 +131,12 @@ else:
     print(f"Usage: {sys.argv[0]} [-w] <cid>", file=sys.stderr)
     sys.exit(1)
 
-description = "⚠️ This article is a draft"
+html = f"{out_dir}/{cid}.html" # output filename
+if os.path.exists(html):
+    print(f"Error: {html} already exists.", file=sys.stderr)
+    sys.exit(1)
+
+description = "⚠️ This article is a draft."
 
 # load resource json
 with open(f"{WORK_DIR}/{cid}.json", "r", encoding="utf-8") as f:
@@ -149,15 +156,16 @@ context = {
     "pubdate": now.strftime("%Y-%m-%d"),
     "date": resource["date"],  # {'start': '%Y-%m-%d', 'end': '%Y-%m-%d'}
     "datejp": (lambda args: {"start": args[0], "end": args[1]})(jp_datespan(s, e)),
-    "section": gen_section(resource["section"]),
+    "section": gen_section(resource["section"], out_dir),
     "lm_year": now.year,
     "year": s.year,
 }
 
+
 # Jinja2 template rendering
 env = Environment(loader=FileSystemLoader("template"), trim_blocks=True)
 template = env.get_template("draft.html")
-with open(f"{out_dir}/{cid}.html", "w", encoding="utf-8") as f:
+with open(html, "w", encoding="utf-8") as f:
     f.write(template.render(context))
     f.write("\n")
 # __END__
