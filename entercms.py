@@ -9,8 +9,8 @@ import sys
 from config import DATA_DIR, DIST_DIR
 
 # open database connection
-connection = sqlite3.connect(f"{DATA_DIR}/metadata.sqlite3")
-cursor = connection.cursor()
+connection = sqlite3.connect(f"file:{DATA_DIR}/metadata.sqlite3?mode=rwc", uri=True)
+connection.isolation_level = None
 
 # create table
 sql = """
@@ -26,8 +26,7 @@ CREATE TABLE IF NOT EXISTS metadata (
     img2x TEXT
 )
 """
-cursor.execute(sql)
-connection.commit()
+connection.execute(sql)
 
 # $ cd DATA_DIR
 # $ sqlite3 metadata.sqlite3
@@ -43,9 +42,10 @@ if len(sys.argv) > 1 and sys.argv[1] == "-d":
             cid = os.path.splitext(os.path.basename(arg))[0]
         else:
             cid = arg
-        cursor.execute("DELETE FROM metadata WHERE cid = ?", (cid,))
-
-    connection.commit()
+        try:
+            connection.execute("DELETE FROM metadata WHERE cid = ?", (cid,))
+        except sqlite3.Error as e:
+            print(e, file=sys.stderr)
     connection.close()
     sys.exit(0)
 
@@ -95,8 +95,10 @@ for arg in sys.argv[1:]:
 REPLACE INTO metadata (cid, start, end, pub, title, summary, link, img1x, img2x)
 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
 """
-    cursor.execute(sql, (cid, start, end, pub, title, summary, link, img1x, img2x))
-    connection.commit()
+    try:
+        connection.execute(sql, (cid, start, end, pub, title, summary, link, img1x, img2x))
+    except sqlite3.Error as e:
+        print(e, file=sys.stderr)
 
 connection.close()
 # __END__
