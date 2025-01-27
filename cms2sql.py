@@ -19,7 +19,8 @@ if len(sys.argv) != 2:
 cid = sys.argv[1]  # Content ID
 
 # open metadata database of trip reports
-connection = sqlite3.connect(f"{DATA_DIR}/metadata.sqlite3")
+connection = sqlite3.connect(f"file:{DATA_DIR}/metadata.sqlite3?mode=ro", uri=True)
+connection.isolation_level = None
 cursor = connection.cursor()
 
 # write SQL for register new article
@@ -27,17 +28,19 @@ sql = """
 SELECT start, end, pub, title, summary, link, img1x FROM metadata WHERE cid=?
 """
 cursor.execute(sql, (cid,))
-start, end, pub, title, summary, link, img1x = cursor.fetchone()
-sql = f"""
-INSERT INTO record VALUES (NULL, '{start}', '{end}', '{pub}', '{title}', '{summary}', '{link}', '{img1x}');
-"""
+try:
+    start, end, pub, title, summary, link, img1x = cursor.fetchone()
+except TypeError:
+    print(f"Error: cid {cid} not found", file=sys.stderr)
+    sys.exit(1)
+sql = f"INSERT INTO record VALUES (NULL, '{start}', '{end}', '{pub}', '{title}', '{summary}', '{link}', '{img1x}');"
 print(sql)
 print("SET @rec=LAST_INSERT_ID();")
 
 connection.close()
 
 # gather summit points
-wpts = set()
+summits = {} # (lon, lat) -> name
 for file in glob.glob(f"{DIST_DIR}/{cid}/routemap*.geojson"):
     with open(file, "r", encoding="utf-8") as f:
         root = json.load(f)
@@ -46,20 +49,38 @@ for file in glob.glob(f"{DIST_DIR}/{cid}/routemap*.geojson"):
         propertys = feature["properties"]
         if geometry["type"] == "Point" and propertys["_iconUrl"] == ICON_SUMMIT:
             lon, lat = geometry["coordinates"]
-            wpts.add((lon, lat))
+            name = propertys["name"]
+            if (lon, lat) not in summits:
+                summits[(lon, lat)] = name
+            elif name != summits[(lon, lat)]:
+                print(f"Error: name {name} is duplicated", file=sys.stderr)
+                sys.exit(1)
 
 # find the nearest point for each summit
-ids = set()
-for lon, lat in wpts:
+points = {} # id -> { name, [{d, name}] }
+for (lon, lat), name1 in summits.items():
     response = requests.get(f"{DBURL}?mt=1&lon={lon}&lat={lat}")
     if not response.ok:
         print(f"Error: {response.status_code}")
         sys.exit(1)
     data = response.json()
-    id, name, d = data[0]["id"], data[0]["name"], data[0]["d"]
-    if id not in ids and d < 40:  # less than 40m
-        d = round(d, 1)
-        print(f"INSERT INTO explored VALUES (@rec, NULL, {id}); -- {name}, {d}m")
-        ids.add(id)
+    id, name2, d = data[0]["id"], data[0]["name"], data[0]["d"]
+    if id not in points:
+        points[id] = {"name": name2, "smts": []}
+    points[id]["smts"].append({"d": d, "name": name1})
 
-# __END__
+# output SQL for explored points
+for id in points:
+    name2 = points[id]["name"]
+    smts = sorted(points[id]["smts"], key=lambda x: x["d"])
+    i = 0
+    for smt in smts:
+        d, name1 = smt["d"], smt["name"]
+        dd = round(d, 1)
+        if i == 0 and d < 100: # [m]
+            print(f"INSERT INTO explored VALUES (@rec, NULL, {id}/* {name2} */); -- {name1}, {dd}m")
+        else:
+            print(f"# {id} {name2} -- {name1}, {dd}m")
+        i += 1
+
+ # __END__
