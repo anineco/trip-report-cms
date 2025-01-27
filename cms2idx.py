@@ -22,7 +22,8 @@ lm = datetime.strptime(lm_date, "%Y-%m-%d")
 context = {"lm_date": lm_date, "lm_year": lm_year, "lmyy": lmyy, "items": []}
 
 # read data base
-connection = sqlite3.connect(f"{DATA_DIR}/metadata.sqlite3")
+connection = sqlite3.connect(f"file:{DATA_DIR}/metadata.sqlite3?mode=ro", uri=True)
+connection.isolation_level = None
 cursor = connection.cursor()
 
 sql = """

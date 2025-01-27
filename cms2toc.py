@@ -26,7 +26,8 @@ for year in range(int(lm_year), 2003, -1):  # CAUTION: the first year is hard-co
 
 # 年別山行記録 (Trip Records by Year)
 
-connection = sqlite3.connect(f"{DATA_DIR}/metadata.sqlite3")
+connection = sqlite3.connect(f"file:{DATA_DIR}/metadata.sqlite3?mode=ro", uri=True)
+connection.isolation_level = None
 cursor = connection.cursor()
 
 for year in range(int(lm_year), 1997, -1):  # CAUTION: the first year is hard-coded

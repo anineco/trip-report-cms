@@ -19,7 +19,8 @@ year = sys.argv[1]
 data = {}  # NOTE: data = { pub => [content, ...] }
 
 # read data base
-connection = sqlite3.connect(f"{DATA_DIR}/metadata.sqlite3")
+connection = sqlite3.connect(f"file:{DATA_DIR}/metadata.sqlite3?mode=ro", uri=True)
+connection.isolation_level = None
 cursor = connection.cursor()
 
 sql = """
