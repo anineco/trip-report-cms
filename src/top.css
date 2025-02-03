@@ -21,6 +21,7 @@ body {
     /* background-image: url(../image/kabe_156.gif); *//* 年末 */
     background-repeat: repeat;
     font-family: 'Helvetica Neue', 'Arial', 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', 'Meiryo', sans-serif;
+    font-feature-settings: "palt";
 }
 
 :root {

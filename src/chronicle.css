@@ -9,6 +9,7 @@ body {
     height: 100%;
     line-height: 1.2;
     font-family: 'Helvetica Neue', 'Arial', 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', 'Meiryo', sans-serif;
+    font-feature-settings: "palt";
     background-color: rgb(255,243,231); /* NOTE: background-color of image/sakura_05-min.png */
     color: black;
 }
