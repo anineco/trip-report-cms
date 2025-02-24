@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import json
+import os.path
 import subprocess
 import sys
 
@@ -19,7 +20,7 @@ else:
     sys.exit(1)
 
 # read json file
-with open(f"{WORK_DIR}/{cid}.json", "r") as f:
+with open(os.path.join(WORK_DIR, f"{cid}.json"), "r") as f:
     resource = json.load(f)
 
 # provide shell script to squoosh images

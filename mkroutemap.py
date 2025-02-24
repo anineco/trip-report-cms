@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import json
+import os
 import subprocess
 import sys
 
@@ -21,8 +22,12 @@ else:
     print(f"Usage: {sys.argv[0]} [-w] <cid>", file=sys.stderr)
     sys.exit(1)
 
+output_path = os.path.join(out_dir, cid)
+if not os.path.exists(output_path):
+    os.makedirs(output_path)
+
 # read json file
-with open(f"{WORK_DIR}/{cid}.json", "r") as f:
+with open(os.path.join(WORK_DIR, f"{cid}.json"), "r") as f:
     resource = json.load(f)
 
 xt_error = 0.005  # cross track error in km
@@ -50,7 +55,7 @@ for s in resource["section"]:
     root = ET.fromstring(xml)
 
     geojson = togeojson.togeojson(root, line_size, line_style, opacity)
-    with open(f"{out_dir}/{cid}/{routemap}", "w", encoding="utf-8") as f:
+    with open(os.path.join(output_path, routemap), "w", encoding="utf-8") as f:
         f.write(json.dumps(geojson, ensure_ascii=False, separators=(",", ":")))
         f.write("\n")
 

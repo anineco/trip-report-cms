@@ -131,7 +131,8 @@ else:
     print(f"Usage: {sys.argv[0]} [-w] <cid>", file=sys.stderr)
     sys.exit(1)
 
-html = f"{out_dir}/{cid}.html" # output filename
+# output filename
+html = os.path.join(out_dir, f"{cid}.html")
 if os.path.exists(html):
     print(f"Error: {html} already exists.", file=sys.stderr)
     sys.exit(1)
@@ -139,7 +140,7 @@ if os.path.exists(html):
 description = "⚠️ This article is a draft."
 
 # load resource json
-with open(f"{WORK_DIR}/{cid}.json", "r", encoding="utf-8") as f:
+with open(os.path.join(WORK_DIR, f"{cid}.json"), "r", encoding="utf-8") as f:
     resource = json.load(f)
 
 # set template context

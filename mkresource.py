@@ -234,13 +234,13 @@ for photo in photos:
             break
 
 # prepare WORK_DIR
-folder = f"{WORK_DIR}/{cid}"
+folder = os.path.join(WORK_DIR, cid)
 if not os.path.exists(folder):
     os.makedirs(folder)
 
 # write resource.json
-file = f"{WORK_DIR}/{cid}.json"
-with open(file, "w") as f:
+file = os.path.join(WORK_DIR, f"{cid}.json")
+with open(file, "w", encoding="utf-8") as f:
     f.write(json.dumps(resource, ensure_ascii=False, indent=2))
 
 # __END__
