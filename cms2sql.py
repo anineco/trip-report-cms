@@ -10,7 +10,8 @@ import sys
 from config import DATA_DIR, DIST_DIR
 
 ICON_SUMMIT = "symbols/Summit.png"
-DBURL = "https://map.jpn.org/share/db.php"
+# DBURL = "https://map.jpn.org/share/db.php"
+DBURL = "http://anineco.local/~tad/share/db.php"
 
 # command line arguments
 if len(sys.argv) != 2:
