@@ -6,6 +6,26 @@
 <link>https://anineco.org/</link>
 <description>群馬県桐生市からの車利用日帰り山歩きをメインとする山行記録</description>
 <item>
+<title>猪狩山〜秩父御岳山</title>
+<link>https://anineco.org/250302.html</link>
+<description>2025年3月2日 狼信仰と御嶽信仰の山を繋いで歩く。</description>
+<content:encoded><![CDATA[<img src="https://anineco.org/250302/S0127.jpg" srcset="https://anineco.org/250302/2x/S0127.jpg 2x" width="120" height="90">]]></content:encoded>
+<dc:subject>登山</dc:subject>
+<dc:creator>あにねこ</dc:creator>
+<dc:date>2025-03-09</dc:date>
+<guid>https://anineco.org/250302.html</guid>
+</item>
+<item>
+<title>足利アルプス</title>
+<link>https://anineco.org/250222.html</link>
+<description>2025年2月22日 行道山から織姫神社まで8人パーティで歩く。</description>
+<content:encoded><![CDATA[<img src="https://anineco.org/250222/S0025.jpg" srcset="https://anineco.org/250222/2x/S0025.jpg 2x" width="120" height="90">]]></content:encoded>
+<dc:subject>登山</dc:subject>
+<dc:creator>あにねこ</dc:creator>
+<dc:date>2025-03-07</dc:date>
+<guid>https://anineco.org/250222.html</guid>
+</item>
+<item>
 <title>観音山</title>
 <link>https://anineco.org/250216.html</link>
 <description>2025年2月16日 秩父札所31番観音院のある岩山に登る。</description>
@@ -134,26 +154,6 @@
 <dc:creator>あにねこ</dc:creator>
 <dc:date>2024-10-04</dc:date>
 <guid>https://anineco.org/240924.html</guid>
-</item>
-<item>
-<title>牧山</title>
-<link>https://anineco.org/240916.html</link>
-<description>2024年9月16日 佐世保周辺の山3日目。</description>
-<content:encoded><![CDATA[<img src="https://anineco.org/240916/S3356.jpg" srcset="https://anineco.org/240916/2x/S3356.jpg 2x" width="120" height="90">]]></content:encoded>
-<dc:subject>登山</dc:subject>
-<dc:creator>あにねこ</dc:creator>
-<dc:date>2024-09-29</dc:date>
-<guid>https://anineco.org/240916.html</guid>
-</item>
-<item>
-<title>志々伎山・佐志岳</title>
-<link>https://anineco.org/240915.html</link>
-<description>2024年9月15日 佐世保周辺の山2日目。</description>
-<content:encoded><![CDATA[<img src="https://anineco.org/240915/S3254.jpg" srcset="https://anineco.org/240915/2x/S3254.jpg 2x" width="120" height="90">]]></content:encoded>
-<dc:subject>登山</dc:subject>
-<dc:creator>あにねこ</dc:creator>
-<dc:date>2024-09-28</dc:date>
-<guid>https://anineco.org/240915.html</guid>
 </item>
 </channel>
 </rss>
