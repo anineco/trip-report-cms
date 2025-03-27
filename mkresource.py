@@ -205,7 +205,7 @@ for file in glob.glob(f"{IMG_DIR}/{cid}/*[0-9][0-9][0-9][0-9].*"):
             item["time"] = t.strftime("%Y-%m-%dT%H:%M:%S")
             item["width"] = info["File:ImageWidth"]
             item["height"] = info["File:ImageHeight"]
-            item["caption"] = info["XMP:Title"]
+            item["caption"] = info.get("XMP:Title", "⚠️ caption not found")
         except KeyError:
             print(f"KeyError: {file}", file=sys.stderr)
         except ValueError:
