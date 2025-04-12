@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import json
@@ -50,7 +50,7 @@ function squoosh_crop () {
   done
   p=$[$w/$q]
   q=$[$h/$q]
-  convert $s -gravity center -crop "$p:$q^+0+0" $TMOZ/$b.jpeg
+  magick $s -gravity center -crop "$p:$q^+0+0" $TMOZ/$b.jpeg
   npx sharp --quality 75 --mozjpeg --input $TMOZ/$b.jpeg --output $t.jpg -- resize $w $h
   rm -f $TMOZ/$b.jpeg
 }
