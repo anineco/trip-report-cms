@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 # a simple HTML LS formatter
@@ -15,7 +15,7 @@ elif len(args) == 2:
     with open(args[1], mode="r", encoding="utf-8") as f:
         text = f.read()
 else:
-    print("Usage: formatter.py [<file>]", file=sys.stderr)
+    print("Usage: html_formatter.py [<file>]", file=sys.stderr)
     sys.exit()
 
 # replace '<source>' with a self-closing element
