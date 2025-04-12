@@ -1,17 +1,17 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import glob
 import json
-import requests
 import sqlite3
 import sys
+
+import requests
 
 from config import DATA_DIR, DIST_DIR
 
 ICON_SUMMIT = "symbols/Summit.png"
-# DBURL = "https://map.jpn.org/share/db.php"
-DBURL = "http://anineco.local/~tad/share/db.php"
+DBURL = "https://map.jpn.org/share/mt.php"
 
 # command line arguments
 if len(sys.argv) != 2:
@@ -41,7 +41,7 @@ print("SET @rec=LAST_INSERT_ID();")
 connection.close()
 
 # gather summit points
-summits = {} # (lon, lat) -> name
+summits = {}  # (lon, lat) -> name
 for file in glob.glob(f"{DIST_DIR}/{cid}/routemap*.geojson"):
     with open(file, "r", encoding="utf-8") as f:
         root = json.load(f)
@@ -58,9 +58,9 @@ for file in glob.glob(f"{DIST_DIR}/{cid}/routemap*.geojson"):
                 sys.exit(1)
 
 # find the nearest point for each summit
-points = {} # id -> { name, [{d, name}] }
+points = {}  # id -> { name, [{d, name}] }
 for (lon, lat), name1 in summits.items():
-    response = requests.get(f"{DBURL}?mt=1&lon={lon}&lat={lat}")
+    response = requests.get(f"{DBURL}?lon={lon}&lat={lat}")
     if not response.ok:
         print(f"Error: {response.status_code}")
         sys.exit(1)
@@ -78,10 +78,12 @@ for id in points:
     for smt in smts:
         d, name1 = smt["d"], smt["name"]
         dd = round(d, 1)
-        if i == 0 and d < 100: # [m]
-            print(f"INSERT INTO explored VALUES (@rec, NULL, {id}/* {name2} */); -- {name1}, {dd}m")
+        if i == 0 and d < 100:  # [m]
+            print(
+                f"INSERT INTO explored VALUES (@rec, NULL, {id}/* {name2} */); -- {name1}, {dd}m"
+            )
         else:
             print(f"# {id} {name2} -- {name1}, {dd}m")
         i += 1
 
- # __END__
+# __END__
