@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import os.path
@@ -96,7 +96,9 @@ REPLACE INTO metadata (cid, start, end, pub, title, summary, link, img1x, img2x)
 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
 """
     try:
-        connection.execute(sql, (cid, start, end, pub, title, summary, link, img1x, img2x))
+        connection.execute(
+            sql, (cid, start, end, pub, title, summary, link, img1x, img2x)
+        )
     except sqlite3.Error as e:
         print(e, file=sys.stderr)
 

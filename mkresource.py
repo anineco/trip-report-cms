@@ -35,7 +35,7 @@ def extract_number(file):
     patterns = [
         r"^.{4}(\d{4})\.",  # fixed 4 characters + 4 digits
         r"(\d{4})\d{5}\.",  # %y%m%d%H%M%S + 3 digits
-        r"\d{2}(\d{4})\."  # arbitrary string + 6 digits
+        r"\d{2}(\d{4})\.",  # arbitrary string + 6 digits
     ]
     for pattern in patterns:
         if match := re.search(pattern, base):
@@ -174,7 +174,7 @@ if len(covers) < 1:
     print(f"No cover image found: {cid}", file=sys.stderr)
     sys.exit(1)
 file = covers[0]
-key = extract_number(file) # extract sequential part of cover file name
+key = extract_number(file)  # extract sequential part of cover file name
 resource["cover"] = {"file": file, "hash": key}
 hash.add(key)
 
@@ -183,7 +183,7 @@ photos_unsorted = []
 # NOTE: photo file name should be "arbitrary string + at least 4 digits + extension"
 for file in glob.glob(f"{IMG_DIR}/{cid}/*[0-9][0-9][0-9][0-9].*"):
     item = {"file": file}
-    key = extract_number(file) # extract sequential part of photo file name
+    key = extract_number(file)  # extract sequential part of photo file name
     if key in hash and key != resource["cover"]["hash"]:
         for c in string.ascii_lowercase:
             if (keyc := key + c) not in hash:
