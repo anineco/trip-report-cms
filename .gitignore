@@ -18,6 +18,8 @@ dist/report
 dist/routemap.html
 dist/share
 dist/sitemap.xml.gz
+.DS_Store
+.vscode/
 .env*
 *.jpg
 *.avif
