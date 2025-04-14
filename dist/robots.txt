@@ -1,6 +1,0 @@
-User-agent: *
-Sitemap: https://anineco.org/sitemap.xml.gz
-Disallow: /count/
-Disallow: /report/
-Disallow: /lime/
-Disallow: /msearch/
