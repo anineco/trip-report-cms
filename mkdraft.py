@@ -108,32 +108,33 @@ def gen_photo(photos):
 def gen_section(sections, out_dir):
     ret = []
     for s in sections:
-        ret.append(
-            {
-                "title": s["title"],
-                "date": s["date"],  # %Y-%m-%d
-                "timeline": gen_timeline(s["timeline"]),
-                "routemap": gen_routemap(s["routemap"], out_dir),
-                "photo": gen_photo(s["photo"]),
-            }
-        )
+        r = {
+            "title": s["title"],
+            "date": s["date"],  # %Y-%m-%d
+            "timeline": gen_timeline(s["timeline"]),
+            "photo": gen_photo(s["photo"]),
+        }
+        if "routemap" in s:
+            r["routemap"] = gen_routemap(s["routemap"], out_dir)
+        ret.append(r)
     return ret
 
 
 # command line arguments
-out_dir = DIST_DIR
+wflag = False
 if len(sys.argv) == 2:
     cid = sys.argv[1]  # Content ID
 elif len(sys.argv) == 3 and sys.argv[1] == "-w":
-    out_dir = WORK_DIR
+    wflag = True
     cid = sys.argv[2]
 else:
     print(f"Usage: {sys.argv[0]} [-w] <cid>", file=sys.stderr)
     sys.exit(1)
+out_dir = WORK_DIR if wflag else DIST_DIR
 
 # output filename
 html = os.path.join(out_dir, f"{cid}.html")
-if os.path.exists(html):
+if not wflag and os.path.exists(html):
     print(f"Error: {html} already exists.", file=sys.stderr)
     sys.exit(1)
 
@@ -143,25 +144,51 @@ description = "⚠️ This article is a draft."
 with open(os.path.join(WORK_DIR, f"{cid}.json"), "r", encoding="utf-8") as f:
     resource = json.load(f)
 
+# prepare JSON-LD
+hash = resource["cover"]["hash"]
+now = datetime.now()
+
+location = []
+for prefecture in resource["prefectures"]:
+    location.append({"@type": "AdministrativeArea", "name": prefecture})
+
+json_ld = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "mainEntityOfPage": {"@type": "WebPage", "@id": f"https://anineco.org/{cid}.html"},
+    "headline": resource["title"],
+    "datePublished": now.strftime("%Y-%m-%d"),
+    "author": {"@type": "Person", "name": "あにねこ"},
+    "image": [
+        f"https://anineco.org/{cid}/W{hash}.jpg",
+        f"https://anineco.org/{cid}/F{hash}.jpg",
+        f"https://anineco.org/{cid}/Q{hash}.jpg",
+    ],
+    "about": {
+        "@type": "Event",
+        "name": resource["title"],
+        "startDate": resource["date"]["start"],
+        "endDate": resource["date"]["end"],
+        "location": location,
+    },
+}
+
 # set template context
 s = datetime.strptime(resource["date"]["start"], "%Y-%m-%d")
 e = datetime.strptime(resource["date"]["end"], "%Y-%m-%d")
-now = datetime.now()
 
 context = {
     "description": description,
     "title": resource["title"],
     "cid": resource["cid"],
     "cover": resource["cover"]["hash"],
-    "period": iso_period(s, e),
-    "pubdate": now.strftime("%Y-%m-%d"),
     "date": resource["date"],  # {'start': '%Y-%m-%d', 'end': '%Y-%m-%d'}
     "datejp": (lambda args: {"start": args[0], "end": args[1]})(jp_datespan(s, e)),
+    "json_ld": json.dumps(json_ld, ensure_ascii=False, indent=1, separators=(",", ":")),
     "section": gen_section(resource["section"], out_dir),
     "lm_year": now.year,
     "year": s.year,
 }
-
 
 # Jinja2 template rendering
 env = Environment(loader=FileSystemLoader("template"), trim_blocks=True)

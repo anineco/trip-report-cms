@@ -16,20 +16,7 @@
 <link rel="canonical" href="https://anineco.org/{{ cid }}.html">
 <link rel="stylesheet" href="css/tozan.css">
 <script type="module" src="js/tozan.js"></script>
-<script type="application/ld+json">
-{
-"@context":"http://schema.org/",
-"@type":"BlogPosting",
-"headline":"{{ title }}",
-"temporalCoverage":"{{ period }}",
-"datePublished":"{{ pubdate }}",
-"author":{"@type":"Person","name":"あにねこ"},
-"image":[
-"https://anineco.org/{{ cid }}/W{{ cover }}.jpg",
-"https://anineco.org/{{ cid }}/F{{ cover }}.jpg",
-"https://anineco.org/{{ cid }}/Q{{ cover }}.jpg"
-]}
-</script>
+<script type="application/ld+json">{{ json_ld }}</script>
 </head>
 <body>
 <div id="container">
@@ -37,15 +24,17 @@
 <article>
 <h1>{{ title }}</h1>
 {% if date.start == date.end %}
-<div><time datetime="{{ date.start }}">{{ datejp.start }}</time></div>
+<div>{{ datejp.start }}</div>
 <div>天気：☀️☁️☔☃️</div>
 {% else %}
-<div><time datetime="{{ date.start }}">{{ datejp.start }}</time>〜<time datetime="{{ date.end }}">{{ datejp.end }}</time></div>
+<div>{{ datejp.start }}〜{{ datejp.end }}</div>
 {% endif %}
 <div>メンバー：T</div>
 {% for s in section %}
 {% if loop.length == 1 %}
 <div>行程：{{ s.timeline }}</div>
+{% endif %}
+{% if s.routemap is defined and s.routemap.endswith("routemap.geojson") %}
 <div class="routemap"><a href="{{ s.routemap }}">ルート地図</a>
 GPSのログ（赤：往路、青：復路）を地理院地図に重ねて表示します。</div>
 {% endif %}
@@ -61,8 +50,10 @@ GPSのログ（赤：往路、青：復路）を地理院地図に重ねて表�
 <div>天気：☀️☁️☔☃️</div>
 {% endif %}
 <div>行程：{{ s.timeline }}</div>
+{% if s.routemap is defined and not s.routemap.endswith("routemap.geojson") %}
 <div class="routemap"><a href="{{ s.routemap }}">ルート地図</a>
 GPSのログ（赤：往路、青：復路）を地理院地図に重ねて表示します。</div>
+{% endif %}
 </div>
 {% endif %}
 {% for i in s.photo %}
