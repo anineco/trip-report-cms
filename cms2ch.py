@@ -24,11 +24,11 @@ cursor = connection.cursor()
 
 lm_year = 2022  # NOTE: backward compatibility
 sql = """
-SELECT cid, start, end, pub, title, summary, link, img1x, img2x FROM metadata
+SELECT cid, start, end, pub, region, title, summary, link, img1x, img2x FROM metadata
 WHERE start LIKE ? ORDER BY start
 """
 cursor.execute(sql, (f"{year}%",))
-for cid, start, end, pub, title, summary, link, img1x, img2x in cursor.fetchall():
+for cid, start, end, pub, region, title, summary, link, img1x, img2x in cursor.fetchall():
     if pub:
         p = datetime.strptime(pub, "%Y-%m-%d")
         if lm_year < p.year:
@@ -40,6 +40,7 @@ for cid, start, end, pub, title, summary, link, img1x, img2x in cursor.fetchall(
         {
             "cid": cid,
             "period": jp_period_short(s, e),
+            "region": region,
             "title": title,
             "summary": summary,
             "link": link,

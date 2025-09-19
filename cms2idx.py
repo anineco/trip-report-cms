@@ -27,11 +27,11 @@ connection.isolation_level = None
 cursor = connection.cursor()
 
 sql = """
-SELECT cid, start, end, pub, title, summary, link, img1x, img2x FROM metadata
+SELECT cid, start, end, pub, region, title, summary, link, img1x, img2x FROM metadata
 ORDER BY start DESC LIMIT 3
 """
 cursor.execute(sql)
-for cid, start, end, pub, title, summary, link, img1x, img2x in cursor.fetchall():
+for cid, start, end, pub, region, title, summary, link, img1x, img2x in cursor.fetchall():
     s = datetime.strptime(start, "%Y-%m-%d")
     e = datetime.strptime(end, "%Y-%m-%d")
     p = datetime.strptime(pub, "%Y-%m-%d")
@@ -40,6 +40,7 @@ for cid, start, end, pub, title, summary, link, img1x, img2x in cursor.fetchall(
         {
             "cid": cid,
             "period": jp_period(s, e),
+            "region": region,
             "title": title,
             "summary": summary,
             "link": link,

@@ -82,12 +82,13 @@
 <div class="record">
 <div class="photo"><img src="{{ item.img1x }}" srcset="{{ item.img2x }} 2x" width="120" height="90" alt=""></div>
 <div class="note">
-<h3>{{ item.period }}</h3>
+<div class="area">{{ item.region }}</div>
 <h4><a href="{{ item.link }}">{{ item.title }}</a>
 {%- if item.new %}
  <img src="image/new.gif" alt="new!" width="20" height="11">
 {%- endif %}
 </h4>
+<div class="date">{{ item.period }}</div>
 <p>{{ item.summary }}</p>
 </div>
 </div>

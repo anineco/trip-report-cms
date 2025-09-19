@@ -21,12 +21,13 @@
 <div class="photo"><img src="image/no_image.png" width="120" height="90" alt=""></div>
 {% endif %}
 <div class="note">
-<div>{{ item.period }}</div>
+<div class="area">{{ item.region }}</div>
 {% if item.link %}
 <h2><a href="{{ item.link }}">{{ item.title }}</a></h2>
 {% else %}
 <h2>{{ item.title }}</h2>
 {% endif %}
+<div class="date">{{ item.period }}</div>
 <p>{{ item.summary }}</p>
 </div>
 </div>

@@ -79,20 +79,39 @@ h1 {
     padding: 0;
 }
 
+/*
 .note div:first-child {
     margin-bottom: 10px;
-    font-size: smaller;
+    font-size: small;
     font-weight: bold;
 }
+*/
 
 .note h2 {
-    margin-bottom: 10px;
-    font-size: 100%;
+    margin-top: 2px;
+    margin-bottom: 2px;
+    font-size: medium;
     font-weight: normal;
 }
 
 .note p {
-    font-size: smaller;
+    font-size: small;
+    line-height: 1.5;
+}
+
+.date {
+    font-size: small;
+    font-weight: bold;
+}
+
+.area {
+    font-size: small;
+    background-color: rgb(240,240,240);
+    border-radius: 2px;
+}
+
+.area::before {
+    content: "🗾 ";
 }
 
 hr {
