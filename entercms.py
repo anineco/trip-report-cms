@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import os.path
+import json
 import re
 import sqlite3
 import sys
+from pathlib import Path
+
+from lxml import html
 
 from config import DATA_DIR, DIST_DIR
 
@@ -19,6 +22,7 @@ CREATE TABLE IF NOT EXISTS metadata (
     start TEXT NOT NULL, -- start date
     end TEXT NOT NULL, -- end date
     pub TEXT, -- publication date
+    region TEXT, -- list of prefectures
     title TEXT NOT NULL,
     summary TEXT,
     link TEXT, -- content url
@@ -30,6 +34,7 @@ connection.execute(sql)
 
 # $ cd DATA_DIR
 # $ sqlite3 metadata.sqlite3
+# sqlite> CREATE TABLE metadata ……;
 # sqlite> .mode csv
 # sqlite> .import metadata_no_page.csv metadata
 # sqlite> .quit
@@ -38,8 +43,9 @@ connection.execute(sql)
 if len(sys.argv) > 1 and sys.argv[1] == "-d":
     # delete articles
     for arg in sys.argv[2:]:
-        if arg.endwith(".html"):
-            cid = os.path.splitext(os.path.basename(arg))[0]
+        if arg.endswith(".html"):
+            path = Path(arg)
+            cid = path.stem  # 拡張子を除いたファイル名
         else:
             cid = arg
         try:
@@ -52,52 +58,49 @@ if len(sys.argv) > 1 and sys.argv[1] == "-d":
 # regist articles into metadata database
 for arg in sys.argv[1:]:
     if arg.endswith(".html"):
-        filename = arg
-        cid = os.path.splitext(os.path.basename(arg))[0]
+        path = Path(arg)
+        cid = path.stem  # 拡張子を除いたファイル名
     else:
         cid = arg
-        filename = f"{DIST_DIR}/{cid}.html"
+        path = Path(f"{DIST_DIR}/{cid}.html")
     link = f"{cid}.html"
-    pub = summary = img1x = img2x = ""
-    f = open(filename, "r", encoding="utf-8")
-    for line in f:
-        if match := re.search(r'"temporalCoverage":"(.*?)"', line):
-            datespan = match.group(1).split("/")
-            start = datespan[0]
-            if len(datespan) > 1:
-                e = datespan[1].split("-")
-                y, m, d = start.split("-")
-                if len(e) == 3:
-                    y, m, d = e
-                elif len(e) == 2:
-                    m, d = e
-                else:
-                    d = e[0]
-                end = f"{y}-{m}-{d}"
-            else:
-                end = start
-        elif match := re.search(r"^<title>(.*?)</title>", line):
-            title = match.group(1)
-        elif match := re.search(r'^<meta name="description" content="(.*?)">', line):
-            summary = match.group(1)
-        elif match := re.search(
-            r'^<meta property="og:image" content="https://anineco.org/(.*?)/2x/(.*?).jpg">',
-            line,
-        ):
+
+    parser = html.HTMLParser(encoding="utf-8")
+    tree = html.parse(str(path), parser=parser)
+
+    elements = tree.xpath("//head/title")
+    title = elements[0].text
+
+    elements = tree.xpath('//meta[@name="description"]')
+    summary = elements[0].get("content")
+
+    img1x = img2x = ""
+    if elements := tree.xpath('//meta[@property="og:image"]'):
+        image = elements[0].get("content")
+        if match := re.search(r"https://anineco.org/(.*?)/2x/(.*?).jpg", image):
             folder, cover = match.groups()  # NOTE: folder may not match cid
             img1x = f"{folder}/S{cover}.jpg"
             img2x = f"{folder}/2x/S{cover}.jpg"
-        elif match := re.search(r'"datePublished":"(.*?)"', line):
-            pub = match.group(1)
 
-    f.close()
+    script_tags = tree.xpath('//script[@type="application/ld+json"]')
+    json_data = json.loads(script_tags[0].text)
+
+    pub = json_data.get("datePublished", "")
+    about = json_data["about"]
+    start = about["startDate"]
+    end = about["endDate"]
+    location = about["location"]
+    region = " ".join(
+        [loc["name"] for loc in location if loc["@type"] == "AdministrativeArea"]
+    )
+
     sql = """
-REPLACE INTO metadata (cid, start, end, pub, title, summary, link, img1x, img2x)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+REPLACE INTO metadata (cid, start, end, pub, region, title, summary, link, img1x, img2x)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 """
     try:
         connection.execute(
-            sql, (cid, start, end, pub, title, summary, link, img1x, img2x)
+            sql, (cid, start, end, pub, region, title, summary, link, img1x, img2x)
         )
     except sqlite3.Error as e:
         print(e, file=sys.stderr)
