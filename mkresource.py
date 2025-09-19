@@ -11,12 +11,14 @@ import sys
 import xml.etree.ElementTree as ET
 from datetime import datetime, timedelta
 
+import requests
 from exiftool import ExifToolHelper
 
 from config import GPX_DIR, IMG_DIR, WORK_DIR
 from const import namespaces
 
 ICON_SUMMIT = "952015"  # kashmir3d:icon
+DBURL = "https://map.jpn.org/share/mt.php"
 
 # command line arguments
 if len(sys.argv) != 3:
@@ -45,6 +47,26 @@ def extract_number(file):
     sys.exit(1)
 
 
+# cache of summits obtained from DB
+summits = {}  # id -> { name, [{d, name}] }
+prefectures = {}  # code -> name
+
+
+def get_point(lon, lat, name1):
+    response = requests.get(f"{DBURL}?lon={lon}&lat={lat}")
+    if not response.ok:
+        print(f"Error: {response.status_code}", file=sys.stderr)
+        sys.exit(1)
+    data = response.json()
+    id, name2, d = data[0]["id"], data[0]["name"], data[0]["d"]
+    print(f"Point: {id} {name2} ({d:.1f}m) {name1}", file=sys.stderr)
+    if id not in summits:
+        summits[id] = {"name": name2, "smts": []}
+    summits[id]["smts"].append({"d": d, "name": name1})
+    for p in data[0]["prefectures"]:
+        prefectures[p["code"]] = p["name"]
+
+
 # generate a section containing photos sectioning by the time of waypoints
 def read_section(files):  # gpx files
     wpts = []
@@ -62,6 +84,7 @@ def read_section(files):  # gpx files
                 item["icon"] == ICON_SUMMIT
                 and (cmt := wpt.find("cmt", namespaces)) is not None
             ):
+                get_point(item["lon"], item["lat"], item["name"])
                 for row in cmt.text.split(","):
                     key, value = row.split("=")
                     if key == "標高":  # 'elevation'
@@ -114,8 +137,9 @@ def read_section(files):  # gpx files
         trkpt["nearest"] = nearest
 
     # create timeline
+    section = []
     timeline = []
-    summits = []
+    points = []
 
     for i, trkpt in enumerate(trkpts):
         n1 = trkpt["nearest"]
@@ -125,34 +149,77 @@ def read_section(files):  # gpx files
         n2 = trkpts[i + 1]["nearest"] if i < m else -1
         if n0 != n1:
             start = trkpt["time"]
-        if n1 != n2:
-            end = trkpt["time"]
-            q = wpts[n1]
-            item = {"name": q["name"], "timespan": [start, end]}
-            if q["icon"] == ICON_SUMMIT and "ele" in q:
-                item["ele"] = q["ele"]
-                summits.append(q["name"])
-            timeline.append(item)
+            start_date = start.split("T")[0]
+        if n1 == n2:
+            continue
+        q = wpts[n1]
+        end = trkpt["time"]
+        end_date = end.split("T")[0]
+        if start_date != end_date:
+            end_tmp = end
+            end = f"{start_date}T23:59:59"
+        item = {"name": q["name"], "timespan": [start, end]}
+        if q["icon"] == ICON_SUMMIT and "ele" in q:
+            item["ele"] = q["ele"]
+            points.append(q["name"])
+        timeline.append(item)
+        if start_date == end_date:
+            continue
+        # sectioning at midnight
+        t = timeline[0]["timespan"][0].split("T")  # start date, time
+        section.append(
+            {
+                "title": "〜".join(points),
+                "date": t[0],
+                "timespan": [timeline[0]["timespan"][1], timeline[-1]["timespan"][0]],
+                "timeline": timeline,
+                "photo": [],
+            }
+        )
+        # reset for new section
+        timeline = []
+        points = []
+        start = f"{end_date}T00:00:00"
+        end = end_tmp
+        item = {"name": q["name"], "timespan": [start, end]}
+        if q["icon"] == ICON_SUMMIT and "ele" in q:
+            item["ele"] = q["ele"]
+            points.append(q["name"])
+        timeline.append(item)
 
+    # finalize the last section
     t = timeline[0]["timespan"][0].split("T")  # start date, time
-    return {
-        "title": title or "〜".join(summits),
-        "date": t[0],
-        "timespan": [timeline[0]["timespan"][1], timeline[-1]["timespan"][0]],
-        "timeline": timeline,
-        "photo": [],
-    }
+    section.append(
+        {
+            "title": "〜".join(points),
+            "date": t[0],
+            "timespan": [timeline[0]["timespan"][1], timeline[-1]["timespan"][0]],
+            "timeline": timeline,
+            "photo": [],
+        }
+    )
+    return section
 
 
 # set source gpx files and file name of routemap
-for track in glob.glob(f"{GPX_DIR}/{cid}/trk*.gpx"):
-    if match := re.search(r".*/trk(\d?)\.gpx", track):
-        c = match.group(1)
+if os.path.exists(f"{GPX_DIR}/{cid}/trk.gpx"):
+    files = glob.glob(f"{GPX_DIR}/{cid}/???.gpx")  # rte, trk, wpt
+    sections = read_section(files)
+    sections[0]["gpx"] = files
+    sections[0]["routemap"] = "routemap.geojson"
+    resource["section"].extend(sections)
+else:
+    for c in range(0, 10):
+        if not os.path.exists(f"{GPX_DIR}/{cid}/trk{c}.gpx"):
+            continue
         files = glob.glob(f"{GPX_DIR}/{cid}/???{c}.gpx")  # rte, trk, wpt
-        section = read_section(files)
-        section["gpx"] = files
-        section["routemap"] = f"routemap{c}.geojson"
-        resource["section"].append(section)
+        sections = read_section(files)
+        sections[0]["gpx"] = files
+        sections[0]["routemap"] = f"routemap{c}.geojson"
+        resource["section"].extend(sections)
+
+resource["prefectures"] = [prefectures[code] for code in sorted(prefectures)]
+resource["summits"] = [{"id": id, "name": summits[id]["name"]} for id in summits.keys()]
 
 # set start and end date to resource
 if len(resource["section"]) > 0:
@@ -165,7 +232,7 @@ else:
     match = re.search(r"(\d\d)(\d\d)(\d\d)", cid)
     ymd = "20{}-{}-{}".format(*match.groups())
     resource["date"] = {"start": ymd, "end": ymd}
-    resource["section"] = {"timespan": [f"{ymd}T00:00:00", f"{ymd}T23:59:59"]}
+    resource["section"] = [{"timespan": [f"{ymd}T00:00:00", f"{ymd}T23:59:59"]}]
 
 # set cover image to resource
 hash = set()
