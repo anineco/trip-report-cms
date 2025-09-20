@@ -18,12 +18,8 @@ else:
     print("Usage: html_formatter.py [<file>]", file=sys.stderr)
     sys.exit()
 
-# replace '<source>' with a self-closing element
-text = re.sub(r"<source([^>]*)>", r"<source\1/>", text)
-# NOTE: this will result in the output containing '</source>'
-
 html = ET.fromstring(text, ET.HTMLParser())
 ret = ET.tostring(html, method="html", encoding="unicode", doctype="<!DOCTYPE html>")
-print(ret.replace("</source>", ""))
+print(ret.replace("</source>", ""))  # NOTE: fix for lxml serialization bug
 
 # __END__
