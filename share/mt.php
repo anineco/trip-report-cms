@@ -34,8 +34,9 @@ $sth = null;
 
 # NOTE: ST_Distance_Sphere() is not available in MySQL 5.7, use ST_Distance() instead
 $sql = <<<'EOS'
-SELECT id,name,ST_Distance_Sphere(pt,@g) AS d FROM geom
-ORDER BY d LIMIT 1
+SELECT id,name,ST_Distance_Sphere(pt,@g) AS distance FROM geom
+WHERE ST_Within(pt,ST_Buffer(@g,@EPS))
+ORDER BY distance LIMIT 1
 EOS;
 $sth = $dbh->query($sql);
 $output = $sth->fetchAll(PDO::FETCH_ASSOC);
