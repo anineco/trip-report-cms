@@ -48,21 +48,21 @@ def extract_number(file):
 
 
 # cache of summits obtained from DB
-summits = {}  # id -> { name, [{d, name}] }
+summits = {}  # id -> { name, [{distance, wptname}] }
 prefectures = {}  # code -> name
 
 
-def get_point(lon, lat, name1):
+def get_point(lon, lat, wptname):
     response = requests.get(f"{DBURL}?lon={lon}&lat={lat}")
     if not response.ok:
         print(f"Error: {response.status_code}", file=sys.stderr)
         sys.exit(1)
     data = response.json()
-    id, name2, d = data[0]["id"], data[0]["name"], data[0]["d"]
-    print(f"Point: {id} {name2} ({d:.1f}m) {name1}", file=sys.stderr)
+    id, name, distance = data[0]["id"], data[0]["name"], data[0]["distance"]
+    print(f"Point: {id} {name} ({distance:.1f}m) {wptname}", file=sys.stderr)
     if id not in summits:
-        summits[id] = {"name": name2, "smts": []}
-    summits[id]["smts"].append({"d": d, "name": name1})
+        summits[id] = {"name": name, "wpts": []}
+    summits[id]["wpts"].append({"distance": distance, "name": wptname})
     for p in data[0]["prefectures"]:
         prefectures[p["code"]] = p["name"]
 
@@ -219,7 +219,10 @@ else:
         resource["section"].extend(sections)
 
 resource["prefectures"] = [prefectures[code] for code in sorted(prefectures)]
-resource["summits"] = [{"id": id, "name": summits[id]["name"]} for id in summits.keys()]
+resource["summits"] = []
+for id in summits.keys():
+    distance = min([wpt["distance"] for wpt in summits[id]["wpts"]])
+    resource["summits"].append({"id": id, "name": summits[id]["name"], "distance": distance})
 
 # set start and end date to resource
 if len(resource["section"]) > 0:
