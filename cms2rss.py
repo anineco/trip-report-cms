@@ -49,6 +49,6 @@ connection.close()
 
 # Jinja2 template engine
 env = Environment(loader=FileSystemLoader("template"), trim_blocks=True)
-template = env.get_template("rss20.xml" if rss_version == "2.0" else "rss10.xml")
+template = env.get_template("rss20.xml.j2" if rss_version == "2.0" else "rss10.xml.j2")
 print(template.render(context))
 # __END__

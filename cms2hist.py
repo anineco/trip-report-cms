@@ -51,6 +51,6 @@ for key, value in sorted(data.items(), reverse=True):
 
 # Jinja2 template
 env = Environment(loader=FileSystemLoader("template"), trim_blocks=True)
-template = env.get_template("hist.html")
+template = env.get_template("hist.html.j2")
 print(template.render(context))
 # __END__

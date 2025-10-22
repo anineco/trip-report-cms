@@ -28,7 +28,18 @@ SELECT cid, start, end, pub, region, title, summary, link, img1x, img2x FROM met
 WHERE start LIKE ? ORDER BY start
 """
 cursor.execute(sql, (f"{year}%",))
-for cid, start, end, pub, region, title, summary, link, img1x, img2x in cursor.fetchall():
+for (
+    cid,
+    start,
+    end,
+    pub,
+    region,
+    title,
+    summary,
+    link,
+    img1x,
+    img2x,
+) in cursor.fetchall():
     if pub:
         p = datetime.strptime(pub, "%Y-%m-%d")
         if lm_year < p.year:
@@ -54,6 +65,6 @@ connection.close()
 
 # Jinja2 template
 env = Environment(loader=FileSystemLoader("template"), trim_blocks=True)
-template = env.get_template("ch.html")
+template = env.get_template("ch.html.j2")
 print(template.render(context))
 # __END__

@@ -27,22 +27,22 @@ js: ${TARGET_JS}
 .env.local: ${DATA_DIR}/metadata.sqlite3 latest.py
 	./latest.py > $@
 
-${DIST_DIR}/index.html: ${DATA_DIR}/metadata.sqlite3 cms2idx.py template/index.html .env.local
+${DIST_DIR}/index.html: ${DATA_DIR}/metadata.sqlite3 cms2idx.py template/index.html.j2 .env.local
 	./cms2idx.py > $@
 
-${DIST_DIR}/toc.html: ${DATA_DIR}/metadata.sqlite3 cms2toc.py template/toc.html .env.local
+${DIST_DIR}/toc.html: ${DATA_DIR}/metadata.sqlite3 cms2toc.py template/toc.html.j2 .env.local
 	./cms2toc.py > $@
 
-${DIST_DIR}/ch%.html: ${DATA_DIR}/metadata.sqlite3 cms2ch.py template/ch.html
+${DIST_DIR}/ch%.html: ${DATA_DIR}/metadata.sqlite3 cms2ch.py template/ch.html.j2
 	./cms2ch.py $* > $@
 
-${DIST_DIR}/hist%.html: ${DATA_DIR}/metadata.sqlite3 ${DATA_DIR}/changelog.csv cms2hist.py template/hist.html
+${DIST_DIR}/hist%.html: ${DATA_DIR}/metadata.sqlite3 ${DATA_DIR}/changelog.csv cms2hist.py template/hist.html.j2
 	./cms2hist.py 20$* > $@
 
-${DIST_DIR}/tozan.rdf: ${DATA_DIR}/metadata.sqlite3 cms2rss.py template/rss10.xml
+${DIST_DIR}/tozan.rdf: ${DATA_DIR}/metadata.sqlite3 cms2rss.py template/rss10.xml.j2
 	./cms2rss.py 1.0 > $@
 
-${DIST_DIR}/tozan2.rdf: ${DATA_DIR}/metadata.sqlite3 cms2rss.py template/rss20.xml
+${DIST_DIR}/tozan2.rdf: ${DATA_DIR}/metadata.sqlite3 cms2rss.py template/rss20.xml.j2
 	./cms2rss.py 2.0 > $@
 
 ${DIST_DIR}/css/%.css: src/%.css

@@ -1,0 +1,93 @@
+{
+  "@context": {
+    "@vocab": "http://schema.org",
+    "wd": "https://www.wikidata.org/entity/"
+  },
+  "@graph": [
+    {
+      "@type": "BlogPosting",
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": "https://anineco.org/{{ cid }}.html"
+      },
+      "headline": {{ title | json_escape }},
+      "description": {{ summary | json_escape }},
+      "author": {
+        "@type": "Person",
+        "name": "あにねこ",
+        "url": "https://anineco.org/profile.html"
+      },
+      "datePublished": "{{ issue }}",
+      "image": [
+        {
+          "@type": "ImageObject",
+          "url": "https://anineco.org/{{ cid }}/W{{ cover.hash }}.jpg",
+          "width": 1200,
+          "height": 675
+        },
+        {
+          "@type": "ImageObject",
+          "url": "https://anineco.org/{{ cid }}/F{{ cover.hash }}.jpg",
+          "width": 1200,
+          "height": 900
+        },
+        {
+          "@type": "ImageObject",
+          "url": "https://anineco.org/{{ cid }}/Q{{ cover.hash }}.jpg",
+          "width": 1200,
+          "height": 1200
+        }
+      ],
+      "about": {
+        "@type": "Trip",
+        "name": {{ title | json_escape }},
+        "departureTime": "{{ date.start }}",
+        "arrivalTime": "{{ date.end }}",
+        "description": {{ summary | json_escape }},
+        "itinerary": [
+{% for summit in summits -%}
+{% if not loop.first %},
+{% endif %}
+          {
+            "@type": "Place",
+            "@id": "urn:org.jpn.map:summit:{{ summit.id }}"
+          }
+{%- endfor +%}
+        ]
+      }
+    },
+{% for summit in summits %}
+    {
+      "@type": "Place",
+      "@id": "urn:org.jpn.map:summit:{{ summit.id }}",
+      "name": "{{ summit.name }}",
+      "additionalType": "http://schema.org/Mountain",
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": "{{ summit.lat }}",
+        "longitude": "{{ summit.lon }}",
+        "elevation": {{ summit.alt }}
+      },
+      "containedInPlace": [
+{% for prefecture in summit.prefectures -%}
+{% if not loop.first %},
+{% endif %}
+        {
+          "@id": "urn:org.jpn.map:area:{{ prefecture.code }}"
+        }
+{%- endfor +%}
+      ]
+    },
+{% endfor %}
+{% for prefecture in prefectures -%}
+{% if not loop.first %},
+{% endif %}
+    {
+      "@type": "AdministrativeArea",
+      "@id": "urn:org.jpn.map:area:{{ prefecture.code }}",
+      "name": "{{ prefecture.name }}",
+      "sameAs": "wd:{{ prefecture.qid }}"
+    }
+{%- endfor +%}
+  ]
+}

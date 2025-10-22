@@ -53,6 +53,6 @@ context["category"] = [{"name": c[4]} for c in category]
 
 # Jinja2 template
 env = Environment(loader=FileSystemLoader("template"), trim_blocks=True)
-template = env.get_template("toc.html")
+template = env.get_template("toc.html.j2")
 print(template.render(context))
 # __END__

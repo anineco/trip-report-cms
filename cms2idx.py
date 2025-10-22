@@ -31,7 +31,18 @@ SELECT cid, start, end, pub, region, title, summary, link, img1x, img2x FROM met
 ORDER BY start DESC LIMIT 3
 """
 cursor.execute(sql)
-for cid, start, end, pub, region, title, summary, link, img1x, img2x in cursor.fetchall():
+for (
+    cid,
+    start,
+    end,
+    pub,
+    region,
+    title,
+    summary,
+    link,
+    img1x,
+    img2x,
+) in cursor.fetchall():
     s = datetime.strptime(start, "%Y-%m-%d")
     e = datetime.strptime(end, "%Y-%m-%d")
     p = datetime.strptime(pub, "%Y-%m-%d")
@@ -59,6 +70,6 @@ context["category"] = [{"name": c[4]} for c in category]
 
 # Jinja2 template
 env = Environment(loader=FileSystemLoader("template"), trim_blocks=True)
-template = env.get_template("index.html")
+template = env.get_template("index.html.j2")
 print(template.render(context))
 # __END__
