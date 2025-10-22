@@ -17,6 +17,11 @@ IMG_DIR = f"{HOME}/photo/tozan/original"
 # resource directory for GPX files
 GPX_DIR = f"{HOME}/Garmin"
 
+# waypoint symbol in GPX files for summits
+SYM_SUMMIT = "Summit"
+# web service URL for mountain information database
+DBURL = "https://map.jpn.org/share/mt.php"
+
 
 def main():
     print(f"HOME={HOME}")
@@ -26,6 +31,8 @@ def main():
     print(f"DATA_DIR={DATA_DIR}")
     print(f"IMG_DIR={IMG_DIR}")
     print(f"GPX_DIR={GPX_DIR}")
+    print(f"SYM_SUMMIT={SYM_SUMMIT}")
+    print(f"DBURL={DBURL}")
 
 
 if __name__ == "__main__":

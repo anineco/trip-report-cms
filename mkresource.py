@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import argparse
 import glob
 import json
 import math
@@ -14,21 +15,22 @@ from datetime import datetime, timedelta
 import requests
 from exiftool import ExifToolHelper
 
-from config import GPX_DIR, IMG_DIR, WORK_DIR
+from config import GPX_DIR, IMG_DIR, WORK_DIR, SYM_SUMMIT, DBURL
 from const import namespaces
 
-ICON_SUMMIT = "952015"  # kashmir3d:icon
-DBURL = "https://map.jpn.org/share/mt.php"
+# コマンドライン引数のチェック
+parser = argparse.ArgumentParser(description="Create resource JSON")
+parser.add_argument("cid", help="Content ID")
+parser.add_argument("title", help="Title")
+args = parser.parse_args()
 
-# command line arguments
-if len(sys.argv) != 3:
-    print(f"Usage: {sys.argv[0]} <cid> <title>", file=sys.stderr)
-    sys.exit(1)
+cid = args.cid
+title = args.title
 
-cid = sys.argv[1]  # Content ID
-title = sys.argv[2]  # Title
-
-resource = {"cid": cid, "title": title, "section": []}
+resource = {
+    "cid": cid,
+    "title": title,
+}
 
 
 # extract sequetial number (4 digits) from photo file name
@@ -47,9 +49,9 @@ def extract_number(file):
     sys.exit(1)
 
 
-# cache of summits obtained from DB
+# cache of summits and prefectures obtained from DB
 summits = {}  # id -> { name, [{distance, wptname}] }
-prefectures = {}  # code -> name
+prefectures = {}  # code -> { code, name, qid }
 
 
 def get_point(lon, lat, wptname):
@@ -58,13 +60,18 @@ def get_point(lon, lat, wptname):
         print(f"Error: {response.status_code}", file=sys.stderr)
         sys.exit(1)
     data = response.json()
-    id, name, distance = data[0]["id"], data[0]["name"], data[0]["distance"]
-    print(f"Point: {id} {name} ({distance:.1f}m) {wptname}", file=sys.stderr)
+    if data is None:
+        print(f"Warning: no summit found ({lon}, {lat}) {wptname}", file=sys.stderr)
+        return
+    id, name, distance = data["id"], data["name"], data["distance"]
+    print(f"Summit: {id} {name} (distance: {distance}m) {wptname}", file=sys.stderr)
     if id not in summits:
-        summits[id] = {"name": name, "wpts": []}
+        summits[id] = data  # { id, name, ... }
+        summits[id]["wpts"] = []
     summits[id]["wpts"].append({"distance": distance, "name": wptname})
-    for p in data[0]["prefectures"]:
-        prefectures[p["code"]] = p["name"]
+    for item in data["prefectures"]:
+        code = item["code"]
+        prefectures[code] = item  # {code, name, qid}
 
 
 # generate a section containing photos sectioning by the time of waypoints
@@ -77,11 +84,11 @@ def read_section(files):  # gpx files
             item = {
                 "lat": wpt.get("lat"),
                 "lon": wpt.get("lon"),
-                "icon": wpt.find(".//kashmir3d:icon", namespaces).text,
+                "sym": wpt.find("sym", namespaces).text,
                 "name": wpt.find("name", namespaces).text,
             }
             if (
-                item["icon"] == ICON_SUMMIT
+                item["sym"] == SYM_SUMMIT
                 and (cmt := wpt.find("cmt", namespaces)) is not None
             ):
                 get_point(item["lon"], item["lat"], item["name"])
@@ -116,7 +123,7 @@ def read_section(files):  # gpx files
         dmin = float("inf")
         n = -1
         for i, wpt in enumerate(wpts):
-            # NOTE: compute rough estimate of distance in degree
+            # compute rough estimate of distance in degree
             d = math.hypot(float(wpt["lat"]) - lat, float(wpt["lon"]) - lon)
             if dmin > d:
                 dmin = d
@@ -124,26 +131,28 @@ def read_section(files):  # gpx files
         trkpt["d"] = dmin
         trkpt["n"] = n
 
-    m = len(trkpts) - 1
+    m = len(trkpts) - 1  # index of the last trackpoint
 
+    # consider 3 neighboring points to avoid GPS jitter
     for i, trkpt in enumerate(trkpts):
         p0 = trkpts[i - 1 if i > 0 else 0]
         p1 = trkpt
         p2 = trkpts[i + 1 if i < m else m]
         nearest = -1
-        if p0["n"] == p1["n"] and p2["n"] == p1["n"]:
-            if min(p0["d"], p1["d"], p2["d"]) < 0.0004:  # NOTE: about 44m:
-                nearest = p1["n"]
+        if (
+            p0["n"] == p1["n"] == p2["n"]
+            and min(p0["d"], p1["d"], p2["d"]) < 0.0004  # NOTE: about 44m
+        ):
+            nearest = p1["n"]
         trkpt["nearest"] = nearest
 
     # create timeline
     section = []
     timeline = []
-    points = []
+    summit_names = []
 
     for i, trkpt in enumerate(trkpts):
-        n1 = trkpt["nearest"]
-        if n1 < 0:
+        if (n1 := trkpt["nearest"]) < 0:
             continue
         n0 = trkpts[i - 1]["nearest"] if i > 0 else -1
         n2 = trkpts[i + 1]["nearest"] if i < m else -1
@@ -156,12 +165,14 @@ def read_section(files):  # gpx files
         end = trkpt["time"]
         end_date = end.split("T")[0]
         if start_date != end_date:
+            # crossing midnight
+            # temporarily set end time to 23:59:59 of start date
             end_tmp = end
             end = f"{start_date}T23:59:59"
         item = {"name": q["name"], "timespan": [start, end]}
-        if q["icon"] == ICON_SUMMIT and "ele" in q:
+        if q["sym"] == SYM_SUMMIT and "ele" in q:
             item["ele"] = q["ele"]
-            points.append(q["name"])
+            summit_names.append(q["name"])
         timeline.append(item)
         if start_date == end_date:
             continue
@@ -169,7 +180,7 @@ def read_section(files):  # gpx files
         t = timeline[0]["timespan"][0].split("T")  # start date, time
         section.append(
             {
-                "title": "〜".join(points),
+                "title": "⚠️" + "〜".join(summit_names),
                 "date": t[0],
                 "timespan": [timeline[0]["timespan"][1], timeline[-1]["timespan"][0]],
                 "timeline": timeline,
@@ -177,21 +188,21 @@ def read_section(files):  # gpx files
             }
         )
         # reset for new section
-        timeline = []
-        points = []
+        timeline.clear()
+        summit_names.clear()
         start = f"{end_date}T00:00:00"
         end = end_tmp
         item = {"name": q["name"], "timespan": [start, end]}
-        if q["icon"] == ICON_SUMMIT and "ele" in q:
+        if q["sym"] == SYM_SUMMIT and "ele" in q:
             item["ele"] = q["ele"]
-            points.append(q["name"])
+            summit_names.append(q["name"])
         timeline.append(item)
 
     # finalize the last section
     t = timeline[0]["timespan"][0].split("T")  # start date, time
     section.append(
         {
-            "title": "〜".join(points),
+            "title": "⚠️" + "〜".join(summit_names),
             "date": t[0],
             "timespan": [timeline[0]["timespan"][1], timeline[-1]["timespan"][0]],
             "timeline": timeline,
@@ -202,27 +213,34 @@ def read_section(files):  # gpx files
 
 
 # set source gpx files and file name of routemap
-if os.path.exists(f"{GPX_DIR}/{cid}/trk.gpx"):
-    files = glob.glob(f"{GPX_DIR}/{cid}/???.gpx")  # rte, trk, wpt
-    sections = read_section(files)
-    sections[0]["gpx"] = files
-    sections[0]["routemap"] = "routemap.geojson"
-    resource["section"].extend(sections)
-else:
-    for c in range(0, 10):
-        if not os.path.exists(f"{GPX_DIR}/{cid}/trk{c}.gpx"):
-            continue
-        files = glob.glob(f"{GPX_DIR}/{cid}/???{c}.gpx")  # rte, trk, wpt
+resource["section"] = []
+
+for c in [""] + list(string.digits):  # '', '0', '1', ..., '9'
+    files = []
+    for item in ["trk", "wpt", "rte"]:
+        gpx = f"{GPX_DIR}/{cid}/{item}{c}.gpx"
+        if os.path.exists(gpx):
+            files.append(gpx)
+        elif item == "trk":
+            break  # 'wpt' and 'rte' are optional
+    if len(files) > 0:
         sections = read_section(files)
         sections[0]["gpx"] = files
         sections[0]["routemap"] = f"routemap{c}.geojson"
         resource["section"].extend(sections)
+        if c == "":
+            break  # use only the first set of gpx files
 
+# set prefectures and summits to resource
 resource["prefectures"] = [prefectures[code] for code in sorted(prefectures)]
 resource["summits"] = []
-for id in summits.keys():
-    distance = min([wpt["distance"] for wpt in summits[id]["wpts"]])
-    resource["summits"].append({"id": id, "name": summits[id]["name"], "distance": distance})
+for summit in summits.values():
+    location = summit["prefectures"]
+    # get minimum distance among waypoints associated with the summit
+    distance = min([float(wpt["distance"]) for wpt in summit["wpts"]])
+    summit["distance"] = distance
+    del summit["wpts"]  # remove unnecessary data
+    resource["summits"].append(summit)
 
 # set start and end date to resource
 if len(resource["section"]) > 0:
@@ -238,36 +256,38 @@ else:
     resource["section"] = [{"timespan": [f"{ymd}T00:00:00", f"{ymd}T23:59:59"]}]
 
 # set cover image to resource
-hash = set()
 covers = glob.glob(f"{IMG_DIR}/{cid}/cover/*")
 if len(covers) < 1:
     print(f"No cover image found: {cid}", file=sys.stderr)
     sys.exit(1)
 file = covers[0]
-key = extract_number(file)  # extract sequential part of cover file name
-resource["cover"] = {"file": file, "hash": key}
-hash.add(key)
+hash = extract_number(file)  # extract sequential part of cover file name
+resource["cover"] = {"file": file, "hash": hash}
+
+hash_pool = set()
+hash_pool.add(hash)
 
 # load photo's metadata
 photos_unsorted = []
 # NOTE: photo file name should be "arbitrary string + at least 4 digits + extension"
-for file in glob.glob(f"{IMG_DIR}/{cid}/*[0-9][0-9][0-9][0-9].*"):
-    item = {"file": file}
-    key = extract_number(file)  # extract sequential part of photo file name
-    if key in hash and key != resource["cover"]["hash"]:
-        for c in string.ascii_lowercase:
-            if (keyc := key + c) not in hash:
-                hash.add(keyc)
-                item["hash"] = keyc
-                break
-        if "hash" not in item:
-            print(f"Too many photos: {cid}", file=sys.stderr)
-            sys.exit(1)
-    else:
-        hash.add(key)
-        item["hash"] = key
+with ExifToolHelper() as et:
+    for file in glob.glob(f"{IMG_DIR}/{cid}/*[0-9][0-9][0-9][0-9].*"):
+        item = {}
+        item["file"] = file
+        hash = extract_number(file)  # extract sequential part of photo file name
+        if hash in hash_pool and hash != resource["cover"]["hash"]:
+            for c in string.ascii_lowercase:
+                if (hashc := hash + c) not in hash_pool:
+                    hash_pool.add(hashc)
+                    item["hash"] = hashc
+                    break
+            if "hash" not in item:
+                print(f"Too many photos: {file}", file=sys.stderr)
+                sys.exit(1)
+        else:
+            hash_pool.add(hash)
+            item["hash"] = hash
 
-    with ExifToolHelper() as et:
         try:
             info = et.get_metadata(file)[0]
             date_time_original = info["EXIF:DateTimeOriginal"]
@@ -281,8 +301,12 @@ for file in glob.glob(f"{IMG_DIR}/{cid}/*[0-9][0-9][0-9][0-9].*"):
         except ValueError:
             print(f"ValueError: {file}", file=sys.stderr)
 
-    photos_unsorted.append(item)
+        photos_unsorted.append(item)
 
+# number of photos should be even for left/right layout
+if (n := len(photos_unsorted)) % 2 != 0:
+    print(f"Error: number of photos ({n}) should be even", file=sys.stderr)
+    sys.exit(1)
 photos = sorted(photos_unsorted, key=lambda x: x["time"])
 
 # assign photos to sections by time
