@@ -10,7 +10,8 @@ from datetime import datetime, timedelta
 from jinja2 import Environment, FileSystemLoader
 
 from config import DIST_DIR, WORK_DIR
-from utils import iso_period, jp_datespan
+from utils import jp_datespan
+from jsonld import gen_jsonld
 
 
 # round time to the nearest 5 minutes
@@ -122,69 +123,49 @@ def gen_section(sections, out_dir):
 
 # command line arguments
 wflag = False
+fflag = False
 if len(sys.argv) == 2:
     cid = sys.argv[1]  # Content ID
 elif len(sys.argv) == 3 and sys.argv[1] == "-w":
     wflag = True
     cid = sys.argv[2]
+elif len(sys.argv) == 3 and sys.argv[1] == "-f":
+    fflag = True
+    cid = sys.argv[2]
 else:
-    print(f"Usage: {sys.argv[0]} [-w] <cid>", file=sys.stderr)
+    print(f"Usage: {sys.argv[0]} [-w] [-f] <cid>", file=sys.stderr)
     sys.exit(1)
 out_dir = WORK_DIR if wflag else DIST_DIR
 
 # output filename
 html = os.path.join(out_dir, f"{cid}.html")
-if not wflag and os.path.exists(html):
+if not wflag and not fflag and os.path.exists(html):
     print(f"Error: {html} already exists.", file=sys.stderr)
     sys.exit(1)
-
-description = "⚠️ This article is a draft."
 
 # load resource json
 with open(os.path.join(WORK_DIR, f"{cid}.json"), "r", encoding="utf-8") as f:
     resource = json.load(f)
 
-# prepare JSON-LD
-hash = resource["cover"]["hash"]
 now = datetime.now()
+resource["issue"] = resource.get("issue", now.strftime("%Y-%m-%d"))
+resource["summary"] = resource.get("summary", "⚠️ This article is a draft.")
 
-location = []
-for prefecture in resource["prefectures"]:
-    location.append({"@type": "AdministrativeArea", "name": prefecture})
-
-json_ld = {
-    "@context": "https://schema.org",
-    "@type": "BlogPosting",
-    "mainEntityOfPage": {"@type": "WebPage", "@id": f"https://anineco.org/{cid}.html"},
-    "headline": resource["title"],
-    "datePublished": now.strftime("%Y-%m-%d"),
-    "author": {"@type": "Person", "name": "あにねこ"},
-    "image": [
-        f"https://anineco.org/{cid}/W{hash}.jpg",
-        f"https://anineco.org/{cid}/F{hash}.jpg",
-        f"https://anineco.org/{cid}/Q{hash}.jpg",
-    ],
-    "about": {
-        "@type": "Event",
-        "name": resource["title"],
-        "startDate": resource["date"]["start"],
-        "endDate": resource["date"]["end"],
-        "location": location,
-    },
-}
+# draft description for meta description, meta og:description, and JSON-LD Trip description
+json_ld = json.loads(gen_jsonld(resource))
 
 # set template context
 s = datetime.strptime(resource["date"]["start"], "%Y-%m-%d")
 e = datetime.strptime(resource["date"]["end"], "%Y-%m-%d")
 
 context = {
-    "description": description,
+    "description": resource["summary"],
     "title": resource["title"],
     "cid": resource["cid"],
-    "cover": resource["cover"]["hash"],
+    "cover": resource["cover"],
     "date": resource["date"],  # {'start': '%Y-%m-%d', 'end': '%Y-%m-%d'}
     "datejp": (lambda args: {"start": args[0], "end": args[1]})(jp_datespan(s, e)),
-    "json_ld": json.dumps(json_ld, ensure_ascii=False, indent=1, separators=(",", ":")),
+    "json_ld": json.dumps(json_ld, ensure_ascii=False, separators=(",", ":")),
     "section": gen_section(resource["section"], out_dir),
     "lm_year": now.year,
     "year": s.year,
@@ -192,7 +173,7 @@ context = {
 
 # Jinja2 template rendering
 env = Environment(loader=FileSystemLoader("template"), trim_blocks=True)
-template = env.get_template("draft.html")
+template = env.get_template("draft.html.j2")
 with open(html, "w", encoding="utf-8") as f:
     f.write(template.render(context))
     f.write("\n")
