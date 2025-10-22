@@ -22,38 +22,6 @@ connection = mysql.connector.connect(
 )
 cursor = connection.cursor(dictionary=True)
 
-prefs_aux = {
-    "000822": ["新潟県", "長野県"],
-    "020921": ["福島県", "新潟県"],
-    "030309": ["群馬県"],
-    "030810": ["富山県"],
-    "040330": ["青森県"],
-    "050211": ["栃木県"],
-    "060205": ["栃木県"],
-    "060527": ["栃木県"],
-    "070113": ["栃木県"],
-    "070520": ["山梨県"],
-    "070912": ["鳥取県"],
-    "080915": ["群馬県"],
-    "081109": ["群馬県"],
-    "090405": ["新潟県"],
-    "090523": ["群馬県"],
-    "100509": ["栃木県"],
-    "100515": ["群馬県"],
-    "100724": ["福島県", "群馬県"],
-    "100801": ["群馬県"],
-    "110618": ["群馬県", "新潟県"],
-    "110814": ["新潟県"],
-    "111218": ["群馬県"],
-    "130706": ["栃木県"],
-    "130804": ["栃木県"],
-    "140405": ["群馬県"],
-    "170320": ["千葉県"],
-    "180812": ["栃木県"],
-    "241014": ["新潟県"],
-    "990815": ["長野県"],
-}
-
 
 def update_json_ld(filename):
     original_path = Path(filename)
@@ -61,79 +29,151 @@ def update_json_ld(filename):
     backup_path = Path(f"{filename}.bak")
     original_path.rename(backup_path)
 
-    sql = """
-SELECT rec, start, end, issue FROM record WHERE link=%s
-"""
-    cursor.execute(sql, (f"{cid}.html",))
-    record = cursor.fetchone()
-    sql = """
-SELECT id, name FROM explored JOIN sanmei USING (id) WHERE type=1 AND rec=%s
-"""
-    cursor.execute(sql, (record["rec"],))
-    summits = cursor.fetchall()
-    prefectures = {}
-    for s in summits:
-        sql = """
-SELECT code, name FROM city WHERE code IN (SELECT DISTINCT (code DIV 1000) * 1000 FROM location WHERE id=%s)
-"""
-        cursor.execute(sql, (s["id"],))
-        prefs = cursor.fetchall()
-        for p in prefs:
-            prefectures[p["code"]] = p["name"]
-
     parser = html.HTMLParser(encoding="utf-8")
     tree = html.parse(str(backup_path), parser=parser)
     script_tags = tree.xpath('//script[@type="application/ld+json"]')
     if not script_tags:
         print(f"Error: No JSON-LD script tag found in {filename}.", file=sys.stderr)
         sys.exit(1)
-    json_data = json.loads(script_tags[0].text)
 
-    issue_date = None
-    if record["issue"] is not None:
-        issue_date = str(record["issue"])
-    elif "datePublished" in json_data:
-        issue_date = json_data["datePublished"]
+    sql = """
+SELECT rec, start, end, issue, title, summary, link, image FROM record WHERE link=%s
+"""
+    cursor.execute(sql, (f"{cid}.html",))
+    record = cursor.fetchone()
 
-    location = []
-    if prefectures:
-        for code in sorted(prefectures):
-            location.append({"@type": "AdministrativeArea", "name": prefectures[code]})
-    elif cid in prefs_aux:
-        for name in prefs_aux[cid]:
-            location.append({"@type": "AdministrativeArea", "name": name})
+    if image := record["image"]:
+        if match := re.search(r"^(.*)/S(.*)$", image):
+            dest, file = match.groups()
+            image = [
+                {
+                    "@type": "ImageObject",
+                    "url": f"https://anineco.org/{dest}/W{file}",
+                    "width": 1200,
+                    "height": 675,
+                },
+                {
+                    "@type": "ImageObject",
+                    "url": f"https://anineco.org/{dest}/F{file}",
+                    "width": 1200,
+                    "height": 900,
+                },
+                {
+                    "@type": "ImageObject",
+                    "url": f"https://anineco.org/{dest}/Q{file}",
+                    "width": 1200,
+                    "height": 1200,
+                },
+            ]
 
-    json_ld = {
-        "@context": "https://schema.org",
+    sql = """
+SELECT id, sanmei.kana, sanmei.name, alt, lat, lon
+FROM geom
+JOIN sanmei USING (id)
+JOIN explored USING (id)
+WHERE type=1 AND rec=%s
+ORDER BY ascent_order
+"""
+    cursor.execute(sql, (record["rec"],))
+    summits = cursor.fetchall()
+
+    prefectures = {}
+    itinerary = []
+    json_summits = []
+
+    for summit in summits:
+        places = []
+        id = summit["id"]
+        sql = """
+SELECT code, name, qid
+FROM city
+WHERE code IN (
+    SELECT DISTINCT CONCAT(LEFT(code, 2), '000') FROM location WHERE id=%s
+)
+ORDER BY code
+"""
+        cursor.execute(sql, (id,))
+        for item in cursor.fetchall():
+            code = item["code"]
+            prefectures[code] = item
+            places.append({"@id": f"urn:org.jpn.map:area:{code}"})
+
+        itinerary.append(
+            {
+                "@type": "Place",
+                "@id": f"urn:org.jpn.map:summit:{summit['id']}",
+            }
+        )
+        json_summits.append(
+            {
+                "@type": "Place",
+                "@id": f"urn:org.jpn.map:summit:{summit['id']}",
+                "name": summit["name"],
+                "additionalType": "http://schema.org/Mountain",
+                "geo": {
+                    "@type": "GeoCoordinates",
+                    "latitude": str(summit["lat"]),
+                    "longitude": str(summit["lon"]),
+                    "elevation": summit["alt"],
+                },
+                "containedInPlace": places,
+            }
+        )
+
+    json_blog = {
         "@type": "BlogPosting",
         "mainEntityOfPage": {
             "@type": "WebPage",
             "@id": f"https://anineco.org/{cid}.html",
         },
-        "headline": json_data["headline"],
-        "author": {"@type": "Person", "name": "あにねこ"},
-        "datePublished": issue_date,
-        "image": json_data["image"],
+        "headline": record["title"],
+        "description": record["summary"],
+        "author": {
+            "@type": "Person",
+            "name": "あにねこ",
+            "url": "https://anineco.org/profile.html",
+        },
+        "datePublished": str(record["issue"]),
+        "image": image,
         "about": {
-            "@type": "Event",
-            "name": json_data["headline"],
-            "startDate": str(record["start"]),
-            "endDate": str(record["end"]),
-            "location": location,
+            "@type": "Trip",
+            "name": record["title"],
+            "departureTime": str(record["start"]),
+            "arrivalTime": str(record["end"]),
+            "description": record["summary"],
+            "itinerary": itinerary,
         },
     }
-    if issue_date is None:
-        del json_ld["datePublished"]
+    if not record["issue"]:
+        del json_blog["datePublished"]
+    if not image:
+        del json_blog["image"]
 
-    updated_json_string = json.dumps(
-        json_ld, indent=1, separators=(",", ":"), ensure_ascii=False
-    )
+    json_areas = []
+    for code, item in sorted(prefectures.items()):
+        json_areas.append(
+            {
+                "@type": "AdministrativeArea",
+                "@id": f"urn:org.jpn.map:area:{code}",
+                "name": item["name"],
+                "sameAs": f"wd:{item['qid']}",
+            }
+        )
+
+    json_ld = {
+        "@context": {
+            "@vocab": "http://schema.org",
+            "wd": "https://www.wikidata.org/entity/",
+        },
+        "@graph": [
+            json_blog,
+            *json_summits,
+            *json_areas,
+        ],
+    }
+
+    updated_json_string = json.dumps(json_ld, separators=(",", ":"), ensure_ascii=False)
     script_tags[0].text = updated_json_string
-
-    # <time>タグを削除
-    time_elements = tree.xpath("//time")
-    for time_tag in time_elements:
-        time_tag.drop_tag()
 
     output = html.tostring(
         tree.getroot(), method="html", encoding="unicode", doctype="<!DOCTYPE html>"
