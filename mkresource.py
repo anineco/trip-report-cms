@@ -15,7 +15,7 @@ from datetime import datetime, timedelta
 import requests
 from exiftool import ExifToolHelper
 
-from config import GPX_DIR, IMG_DIR, WORK_DIR, SYM_SUMMIT, DBURL
+from config import DBURL, GPX_DIR, IMG_DIR, SYM_SUMMIT, WORK_DIR
 from const import namespaces
 
 # コマンドライン引数のチェック

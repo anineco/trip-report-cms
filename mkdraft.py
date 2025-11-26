@@ -10,8 +10,8 @@ from datetime import datetime, timedelta
 from jinja2 import Environment, FileSystemLoader
 
 from config import DIST_DIR, WORK_DIR
-from utils import jp_datespan
 from jsonld import gen_jsonld
+from utils import jp_datespan
 
 
 # round time to the nearest 5 minutes

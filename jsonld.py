@@ -17,8 +17,14 @@ def json_escape(string):
 
 def gen_jsonld(resource):
     keys = [
-        "cid", "title", "summary", "issue", "date", 
-        "cover", "summits", "prefectures"
+        "cid",
+        "title",
+        "summary",
+        "issue",
+        "date",
+        "cover",
+        "summits",
+        "prefectures",
     ]
     # prepare context for Jinja2
     context = {key: resource[key] for key in keys}
@@ -29,6 +35,7 @@ def gen_jsonld(resource):
     template = env.get_template("ld.json.j2")
     output = template.render(context)
     return output
+
 
 if __name__ == "__main__":
     if len(sys.argv) == 2:
