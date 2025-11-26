@@ -97,8 +97,10 @@ def entercms(cid, print_only=False, modify_pub=False):
         json_blog["description"] = summary
         about["description"] = summary
 
+    filtered_items = (item for item in graph if item["@type"] == "AdministrativeArea")
+    sorted_items = sorted(filtered_items, key=lambda item: item["@id"])
     region = " ".join(
-        [item["name"] for item in graph if item["@type"] == "AdministrativeArea"]
+        [item["name"] for item in sorted_items]
     )  # database `region` field
 
     tupled_data = (cid, start, end, pub, region, title, summary, link, img1x, img2x)
