@@ -1,29 +1,27 @@
 // vite.config.js
 import { resolve } from 'path';
 import { defineConfig } from 'vite';
-import env from 'vite-plugin-env-compatible';
 
-const root = resolve(__dirname, 'src');
+const projectRoot = __dirname;
+const srcRoot = resolve(projectRoot, 'src');
 const base = './';
-const outDir = resolve(__dirname, 'dist/js');
+const outDir = resolve(projectRoot, 'dist/js');
 
 export default defineConfig({
-  root,
-  base,
-  plugins: [
-    env({prefix: 'VITE', mountedPath: 'process.env'})
-  ],
+  root: srcRoot,
+  envDir: projectRoot,
+  base: base,
   build: {
     assetInlineLimit: 0,
-    outDir,
+    outDir: outDir,
     rollupOptions: {
       output: {
         entryFileNames: '[name].js',
         assetFileNames: '[name].js'
       },
       input: {
-        tozan: resolve(root, 'tozan.js'),
-        lightbox: resolve(root, 'lightbox.js')
+        tozan: resolve(srcRoot, 'tozan.js'),
+        lightbox: resolve(srcRoot, 'lightbox.js')
       },
     }
   }

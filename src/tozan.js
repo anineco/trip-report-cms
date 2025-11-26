@@ -1,20 +1,20 @@
 // tozan.js
 import {install} from 'ga-gtag';
-install(process.env.VITE_GTAG);
+install(import.meta.env.VITE_GTAG);
 const YEAR = Number(import.meta.env.VITE_YEAR);
 const LM_YEAR = Number(import.meta.env.VITE_LM_YEAR);
-
-function routemap(url) {
-  if (window.innerWidth < 670) {
-    window.open(url, 'ROUTEMAP');
-  } else {
-    window.open(url, 'ROUTEMAP', 'width=670,height=510,resizable=yes');
-  }
-}
 
 const passive = { passive: true };
 
 window.addEventListener('DOMContentLoaded', function (_event) {
+  function routemap(url) {
+    if (window.innerWidth < 670) {
+      window.open(url, 'ROUTEMAP');
+    } else {
+      window.open(url, 'ROUTEMAP', 'width=670,height=510,resizable=yes');
+    }
+  }
+
   for (const element of document.querySelectorAll('a[href^="routemap.html"],a[href^="https://map.jpn.org/mountain.html?"]')) {
     element.addEventListener('click', function (event) {
       event.preventDefault();
@@ -61,7 +61,7 @@ window.addEventListener('DOMContentLoaded', function (_event) {
   for (const element of document.querySelectorAll('footer')) {
     const img = document.createElement('img');
     img.setAttribute('src', (fn == 'index')
-      ? 'report/report.cgi?' + escape(document.referrer)
+      ? 'report/report.cgi?' + encodeURIComponent(document.referrer)
       : 'lime/lime.cgi?' + fn
     );
     img.setAttribute('width', 1);
@@ -70,13 +70,17 @@ window.addEventListener('DOMContentLoaded', function (_event) {
     element.appendChild(img);
   }
 
-  if (sessionStorage.getItem('url') === location.href) {
-    document.querySelector('main').scrollTop = Number(sessionStorage.getItem('pos'));
+  const mainElement = document.querySelector('main');
+  if (mainElement && sessionStorage.getItem('url') === location.href) {
+    mainElement.scrollTop = Number(sessionStorage.getItem('pos'));
   }
 });
 
 window.addEventListener('beforeunload', function (_event) {
   sessionStorage.setItem('url', location.href);
-  sessionStorage.setItem('pos', document.querySelector('main').scrollTop);
+  const mainElement = document.querySelector('main');
+  if (mainElement) {
+    sessionStorage.setItem('pos', mainElement.scrollTop);
+  }
 });
 // end of tozan.js
