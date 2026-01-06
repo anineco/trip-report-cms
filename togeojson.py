@@ -41,9 +41,11 @@ def get_point_feature(pt):
     }
     if (cmt := pt.find("cmt", namespaces)) is not None and cmt.text:
         for s in cmt.text.split(","):
-            key, value = s.strip().split("=")
-            if key:
+            try:
+                key, value = s.strip().split("=")
                 feature["properties"][key] = value
+            except ValueError:
+                print(f"Warning: invalid comment '{cmt.text}'")
     return feature
 
 
