@@ -3,7 +3,7 @@ venv/
 node_modules/
 work/
 test/
-dist
+dist/
 .DS_Store
 .vscode/
 .env*
