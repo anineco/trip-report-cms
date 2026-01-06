@@ -114,6 +114,8 @@ def read_section(files):  # gpx files
                     }
                     trkpts_unsorted.append(item)
 
+    assert len(wpts) > 0, "no waypoint found"
+    assert len(trkpts_unsorted) > 0, "no trackpoint found"
     trkpts = sorted(trkpts_unsorted, key=lambda x: x["time"])
 
     # for each trackpoint, find the nearest waypoint
@@ -151,6 +153,8 @@ def read_section(files):  # gpx files
     timeline = []
     summit_names = []
 
+    n_trkpts = len(trkpts)
+
     for i, trkpt in enumerate(trkpts):
         if (n1 := trkpt["nearest"]) < 0:
             continue
@@ -164,7 +168,7 @@ def read_section(files):  # gpx files
         q = wpts[n1]
         end = trkpt["time"]
         end_date = end.split("T")[0]
-        if start_date != end_date:
+        if start_date < end_date:
             # crossing midnight
             # temporarily set end time to 23:59:59 of start date
             end_tmp = end
@@ -174,41 +178,30 @@ def read_section(files):  # gpx files
             item["ele"] = q["ele"]
             summit_names.append(q["name"])
         timeline.append(item)
-        if start_date == end_date:
-            continue
-        # sectioning at midnight
-        t = timeline[0]["timespan"][0].split("T")  # start date, time
-        section.append(
-            {
-                "title": "⚠️" + "〜".join(summit_names),
-                "date": t[0],
-                "timespan": [timeline[0]["timespan"][1], timeline[-1]["timespan"][0]],
-                "timeline": timeline,
-                "photo": [],
-            }
-        )
-        # reset for new section
-        timeline.clear()
-        summit_names.clear()
-        start = f"{end_date}T00:00:00"
-        end = end_tmp
-        item = {"name": q["name"], "timespan": [start, end]}
-        if q["sym"] == SYM_SUMMIT and "ele" in q:
-            item["ele"] = q["ele"]
-            summit_names.append(q["name"])
-        timeline.append(item)
+        if start_date < end_date or i == n_trkpts - 1:
+            # sectioning at midnight, or finalize the last section
+            t = timeline[0]["timespan"][0].split("T")  # start date, time
+            section.append(
+                {
+                    "title": "⚠️" + "〜".join(summit_names),
+                    "date": t[0],
+                    "timespan": [
+                        timeline[0]["timespan"][1],
+                        timeline[-1]["timespan"][0],
+                    ],
+                    "timeline": timeline,
+                    "photo": [],
+                }
+            )
+        if start_date < end_date:
+            # copy the last waypoint as the first of new section
+            item = timeline[-1]
+            item["timespan"] = [f"{end_date}T00:00:00", end_tmp]
+            # reset for new section
+            timeline.clear()
+            timeline.append(item)
+            summit_names.clear()
 
-    # finalize the last section
-    t = timeline[0]["timespan"][0].split("T")  # start date, time
-    section.append(
-        {
-            "title": "⚠️" + "〜".join(summit_names),
-            "date": t[0],
-            "timespan": [timeline[0]["timespan"][1], timeline[-1]["timespan"][0]],
-            "timeline": timeline,
-            "photo": [],
-        }
-    )
     return section
 
 
