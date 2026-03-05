@@ -1,5 +1,7 @@
-Jinja2
-lxml>=6.0.1
-PyExifTool
-python-dotenv
-requests
+gpxpy==1.6.2
+Jinja2==3.1.6
+lxml==6.0.2
+mysql_connector_repackaged==0.3.1
+PyExifTool==0.5.6
+python-dotenv==1.2.1
+Requests==2.32.5
