@@ -20,7 +20,8 @@ GPX_DIR = f"{HOME}/Garmin"
 # waypoint symbol in GPX files for summits
 SYM_SUMMIT = "Summit"
 # web service URL for mountain information database
-DBURL = "https://map.jpn.org/share/mt.php"
+# DBURL = "https://map.jpn.org/share/mt.php"
+DBURL = "http://anineco.local/~tad/test/api/mountains/nearest"
 
 
 def main():

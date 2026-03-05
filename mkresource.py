@@ -59,17 +59,17 @@ def get_point(lon, lat, wptname):
     if not response.ok:
         print(f"Error: {response.status_code}", file=sys.stderr)
         sys.exit(1)
-    data = response.json()
-    if data is None:
+    data = response.json() # nearest point among the response list
+    if not data:
         print(f"Warning: no summit found ({lon}, {lat}) {wptname}", file=sys.stderr)
         return
-    id, name, distance = data["id"], data["name"], data["distance"]
-    print(f"Summit: {id} {name} (distance: {distance}m) {wptname}", file=sys.stderr)
+    id, name, distance = data[0]["id"], data[0]["name"], data[0]["distance"]
+    print(f"Summit: {id} {name} (distance: {distance:.1f}m) {wptname}", file=sys.stderr)
     if id not in summits:
-        summits[id] = data  # { id, name, ... }
+        summits[id] = data[0]  # { id, name, ... }
         summits[id]["wpts"] = []
     summits[id]["wpts"].append({"distance": distance, "name": wptname})
-    for item in data["prefectures"]:
+    for item in data[0]["prefectures"]:
         code = item["code"]
         prefectures[code] = item  # {code, name, qid}
 
