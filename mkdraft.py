@@ -71,6 +71,9 @@ def center(min_lon, min_lat, max_lon, max_lat):  # bbox
 # generate routemap URL
 def gen_routemap(routemap, out_dir):
     file = f"{out_dir}/{cid}/{routemap}"
+    if not os.path.exists(file):
+        print(f"Error: {file} does not exist.", file=sys.stderr)
+        sys.exit(1)
     with open(file, "r", encoding="utf-8") as f:
         data = json.load(f)
     if not "bbox" in data:
@@ -177,4 +180,5 @@ template = env.get_template("draft.html.j2")
 with open(html, "w", encoding="utf-8") as f:
     f.write(template.render(context))
     f.write("\n")
+
 # __END__
