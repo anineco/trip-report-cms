@@ -61,7 +61,7 @@ def get_point(lon, lat, wptname):
         sys.exit(1)
     data = response.json() # nearest point among the response list
     if not data:
-        print(f"Warning: no summit found ({lon}, {lat}) {wptname}", file=sys.stderr)
+        print(f"Warning: no summit found ({lat}, {lon}) {wptname}", file=sys.stderr)
         return
     id, name, distance = data[0]["id"], data[0]["name"], data[0]["distance"]
     print(f"Summit: {id} {name} (distance: {distance:.1f}m) {wptname}", file=sys.stderr)
@@ -178,8 +178,8 @@ def read_section(files):  # gpx files
             item["ele"] = q["ele"]
             summit_names.append(q["name"])
         timeline.append(item)
-        if start_date < end_date or i == n_trkpts - 1:
-            # sectioning at midnight, or finalize the last section
+        if start_date < end_date:
+            # sectioning at midnight
             t = timeline[0]["timespan"][0].split("T")  # start date, time
             section.append(
                 {
@@ -193,7 +193,6 @@ def read_section(files):  # gpx files
                     "photo": [],
                 }
             )
-        if start_date < end_date:
             # copy the last waypoint as the first of new section
             item = timeline[-1]
             item["timespan"] = [f"{end_date}T00:00:00", end_tmp]
@@ -201,6 +200,21 @@ def read_section(files):  # gpx files
             timeline.clear()
             timeline.append(item)
             summit_names.clear()
+
+    # finalize the last section
+    t = timeline[0]["timespan"][0].split("T")  # start date, time
+    section.append(
+        {
+            "title": "⚠️" + "〜".join(summit_names),
+            "date": t[0],
+            "timespan": [
+                timeline[0]["timespan"][1],
+                timeline[-1]["timespan"][0],
+            ],
+            "timeline": timeline,
+            "photo": [],
+        }
+    )
 
     return section
 
