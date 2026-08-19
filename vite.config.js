@@ -2,7 +2,7 @@
 import { resolve } from 'path';
 import { defineConfig } from 'vite';
 
-const projectRoot = __dirname;
+const projectRoot = import.meta.dirname;
 const srcRoot = resolve(projectRoot, 'src');
 const base = './';
 const outDir = resolve(projectRoot, 'dist/js');
