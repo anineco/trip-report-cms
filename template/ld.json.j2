@@ -46,13 +46,11 @@
         "description": {{ summary | json_escape }},
         "itinerary": [
 {% for summit in summits -%}
-{% if not loop.first %},
-{% endif %}
           {
             "@type": "Place",
             "@id": "urn:org.jpn.map:summit:{{ summit.id }}"
-          }
-{%- endfor +%}
+          }{% if not loop.last %},{% endif %}
+{% endfor -%}
         ]
       }
     },
@@ -69,25 +67,22 @@
         "elevation": {{ summit.alt }}
       },
       "containedInPlace": [
-{% for prefecture in summit.prefectures -%}
-{% if not loop.first %},
-{% endif %}
+{% set unique_codes = summit.prefectures | map(attribute='code') | unique | list -%}
+{% for code in unique_codes -%}
         {
-          "@id": "urn:org.jpn.map:area:{{ prefecture.code }}"
-        }
-{%- endfor +%}
+          "@id": "urn:org.jpn.map:area:{{ code }}"
+        }{% if not loop.last %},{% endif %}
+{% endfor -%}
       ]
     },
 {% endfor %}
 {% for prefecture in prefectures -%}
-{% if not loop.first %},
-{% endif %}
     {
       "@type": "AdministrativeArea",
       "@id": "urn:org.jpn.map:area:{{ prefecture.code }}",
       "name": "{{ prefecture.name }}",
       "sameAs": "wd:{{ prefecture.qid }}"
-    }
-{%- endfor +%}
+    }{% if not loop.last %},{% endif %}
+{% endfor -%}
   ]
 }
