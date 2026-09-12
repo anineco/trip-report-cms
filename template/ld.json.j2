@@ -47,7 +47,6 @@
         "itinerary": [
 {% for summit in summits -%}
           {
-            "@type": "Place",
             "@id": "urn:org.jpn.map:summit:{{ summit.id }}"
           }{% if not loop.last %},{% endif %}
 {% endfor -%}
@@ -56,10 +55,9 @@
     },
 {% for summit in summits %}
     {
-      "@type": "Place",
+      "@type": "Mountain",
       "@id": "urn:org.jpn.map:summit:{{ summit.id }}",
       "name": "{{ summit.name }}",
-      "additionalType": "http://schema.org/Mountain",
       "geo": {
         "@type": "GeoCoordinates",
         "latitude": "{{ summit.lat }}",
