@@ -146,7 +146,7 @@ SET @rec=LAST_INSERT_ID();
         # output explored summits
         i = 1
         for item in graph:
-            if (
+            if item["@type"] == "Mountain" or (
                 item["@type"] == "Place"
                 and item.get("additionalType") == "http://schema.org/Mountain"
             ):
