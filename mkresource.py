@@ -190,7 +190,7 @@ def read_section(files):  # gpx files
                         timeline[0]["timespan"][1],
                         timeline[-1]["timespan"][0],
                     ],
-                    "timeline": timeline,
+                    "timeline": timeline.copy(),
                     "photo": [],
                 }
             )
@@ -212,7 +212,7 @@ def read_section(files):  # gpx files
                 timeline[0]["timespan"][1],
                 timeline[-1]["timespan"][0],
             ],
-            "timeline": timeline,
+            "timeline": timeline.copy(),
             "photo": [],
         }
     )
